@@ -5,10 +5,11 @@
 >
 > **配套持续更新文件（必须同步维护）**
 > 1. 本文件：`ARCHITECTURE.agents.md`（智能体约束与落地规则）
-> 2. 架构图：`index.html`（可视化总图）→ 在线：https://jzin-v2.github.io/ai-platform-architecture/  
+> 2. 技术架构图：`index.html` → https://jzin-v2.github.io/ai-platform-architecture/
+> 3. 功能架构图：`functional.html` → https://jzin-v2.github.io/ai-platform-architecture/functional.html
 > 仓库：https://github.com/jzin-v2/ai-platform-architecture  
 >
-> 变更架构时：**同时更新上述两个文件**，并保持分期（一期/二期/三期）一致。
+> 变更架构时：**同时更新上述三个文件**，并保持分期（一期/二期/三期）一致。
 
 ---
 
@@ -21,7 +22,7 @@ workspace/
 ├── gfast/                 # 业务底座 + AI 控制面（平台主权 SoT）
 ├── hermes-agent/          # 一期 Runtime（外部现成 Harness，不魔改进 gfast）
 ├── <future-runtime>/      # 如 opencode / qwenpaw / eino …（三期）
-└── ai-platform-architecture/   # 建议放入或软链本架构仓：ARCHITECTURE.agents.md + index.html
+└── ai-platform-architecture/   # ARCHITECTURE.agents.md + index.html + functional.html
 ```
 
 编码智能体默认假设：
@@ -66,6 +67,20 @@ workspace/
 - **MCP 治理门**：权限、风险等级、配额、审计后再转发 Tool
 - **任务表异步调度**（不上 Temporal）
 - Hermes 以 **Docker/容器** 运行；业务 H5/小程序**不动**
+
+#### 一期编码第一步（GFast 与 Hermes 均已能启动之后）
+
+按此顺序提交代码，**不要四个广场并行开工**：
+
+1. `gfast/`：统一资产模型（`kind/version/tenant/status/visibility`）+ 资源广场菜单骨架
+2. `gfast/`：Runtime 注册，先登记 Hermes（地址、健康检查、启用）
+3. 广场**先做 MCP/Tool 一种 kind**（含把现有业务接口封装为 Tool 的登记）
+4. 同一资产模型再加 Skills、接口/Connector、知识库、插件（页面可后做）
+5. 插件 = **平台 Plugin Manifest**；Hermes 定制只在 Projection/Adapter 翻译，不把 Hermes 插件格式当主数据
+6. 知识库广场 = **登记 + 绑定外部知识服务**，不在 GFast 自研向量检索
+7. MCP/Tool 能登记后，再做 MCP 治理门 → Hermes Adapter → Projection → Run 中心闭环
+
+当前未点名二期/三期时，智能体只实现以上第一步到闭环，不铺 Workflow 画布 / Temporal / A2A。
 
 ### 二期 — 编排与隔离强化
 
@@ -185,7 +200,7 @@ gfast/
 5. 不要引入「每个概念一个微服务」  
 6. 不要用 Hermes Desktop/Dashboard 替代 GFast 门户  
 7. 提交说明里写清：改动落在哪一层、是否触及 Projection/Adapter/Gateway  
-8. 若架构变更：同步更新 `ARCHITECTURE.agents.md` 与 `index.html`
+8. 若架构变更：同步更新 `ARCHITECTURE.agents.md`、`index.html` 与 `functional.html`
 
 ---
 
@@ -205,8 +220,9 @@ gfast/
 
 | 项 | 值 |
 |---|---|
-| 架构图（HTML） | `index.html` / https://jzin-v2.github.io/ai-platform-architecture/ |
+| 技术架构图 | `index.html` / https://jzin-v2.github.io/ai-platform-architecture/ |
+| 功能架构图 | `functional.html` / https://jzin-v2.github.io/ai-platform-architecture/functional.html |
 | 智能体约束（本文件） | `ARCHITECTURE.agents.md` |
-| 当前实施焦点 | **一期：GFast + Hermes-agent** |
+| 当前实施焦点 | **一期第一步：资产骨架 + Hermes 登记 + MCP/Tool** |
 | 文档状态 | 与架构图同步持续更新 |
 

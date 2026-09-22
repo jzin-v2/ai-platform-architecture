@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI 平台功能架构图</title>
+  <style>
+    :root {
+      --bg: #f6f7f9; --text: #101828; --muted: #667085; --border: #d0d5dd;
+      --p1: #fffaeb; --p1-a: #f79009; --p2: #f4f3ff; --p2-a: #7a5af8;
+      --p3: #f0f9ff; --p3-a: #0ba5ec; --g: #ecfdf3; --g-a: #12b76a;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "PingFang SC","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+    .page { max-width: 1180px; margin: 0 auto; padding: 28px 18px 72px; }
+    h1 { margin: 0 0 6px; font-size: 1.6rem; }
+    .sub { margin: 0 0 16px; color: var(--muted); font-size: .94rem; }
+    .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .chip { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 4px 10px; font-size: .78rem; font-weight: 600; border: 1px solid var(--border); background: #fff; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.p1 { background: var(--p1-a); } .dot.p2 { background: var(--p2-a); } .dot.p3 { background: var(--p3-a); } .dot.g { background: var(--g-a); }
+    .first {
+      background: #fff7ed; border: 1.5px solid #fdba74; border-radius: 12px; padding: 14px 16px; margin-bottom: 16px;
+    }
+    .first h2 { margin: 0 0 8px; font-size: 1rem; color: #9a3412; }
+    .first ol { margin: 0; padding-left: 1.25em; font-size: .88rem; }
+    .first li { margin: 4px 0; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+    .wide { grid-column: 1 / -1; }
+    .card {
+      background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 14px;
+      position: relative; overflow: hidden;
+    }
+    .card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--accent, #98a2b3); }
+    .card h3 { margin: 0 0 6px; font-size: .95rem; }
+    .meta { font-size: .75rem; color: var(--muted); margin: 0 0 10px; }
+    .items { display: flex; flex-wrap: wrap; gap: 6px; }
+    .item {
+      border: 1px solid #e4e7ec; border-radius: 8px; padding: 6px 8px; font-size: .78rem; background: #f9fafb; min-width: 110px; flex: 1 1 110px;
+    }
+    .item small { display: block; color: var(--muted); font-size: .7rem; margin-top: 2px; }
+    .item.p1 { background: var(--p1); border-color: #f9dbaf; }
+    .item.p2 { background: var(--p2); border-color: #d9d6fe; }
+    .item.p3 { background: var(--p3); border-color: #b9e6fe; }
+    .item.now { outline: 2px solid #f79009; }
+    .note { margin: 10px 0 0; font-size: .78rem; color: var(--muted); }
+    .tag { display: inline-block; font-size: .7rem; font-weight: 700; padding: 2px 7px; border-radius: 6px; margin-right: 4px; }
+    .tag.p1 { background: var(--p1); color: #b54708; }
+    .tag.p2 { background: var(--p2); color: #5925dc; }
+    .tag.p3 { background: var(--p3); color: #026aa2; }
+    .tag.g { background: var(--g); color: #027a48; }
+    .c-portal { --accent: #2e90fa; }
+    .c-gov { --accent: #667085; }
+    .c-plaza { --accent: #12b76a; }
+    .c-studio { --accent: #f79009; }
+    .c-run { --accent: #f04438; }
+    .c-biz { --accent: #15b79e; }
+    .c-int { --accent: #7a5af8; }
+    footer { margin-top: 20px; text-align: center; color: var(--muted); font-size: .75rem; }
+    a { color: #175cd3; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>AI 平台功能架构图</h1>
+    <p class="sub">功能按「用户能做什么」划分；实现落点仍是 GFast 模块 + 外部 Runtime。技术分层见 <a href="./index.html">技术架构图</a>，编码约束见 <a href="./ARCHITECTURE.agents.md">ARCHITECTURE.agents.md</a>。</p>
+
+    <div class="legend">
+      <span class="chip"><span class="dot p1"></span>一期</span>
+      <span class="chip"><span class="dot p2"></span>二期</span>
+      <span class="chip"><span class="dot p3"></span>三期</span>
+      <span class="chip"><span class="dot g"></span>橙色描边 = 编码第一步（先做这个）</span>
+    </div>
+
+    <section class="first">
+      <h2>编码第一步（GFast 已启动、Hermes 已启动之后）</h2>
+      <ol>
+        <li><strong>统一资产模型 + 广场骨架</strong>：一张资产表（kind / version / 租户 / 状态 / 可见性），后台菜单「资源广场」。</li>
+        <li><strong>登记 Hermes Runtime</strong>：地址、健康检查、启用状态。工作台能选中它，但先不追求完整对话闭环。</li>
+        <li><strong>广场先落地一种类型：MCP / Tool</strong>。Skills、接口、知识库用同一模型加 kind，页面随后做，不要四个广场并行开工。</li>
+        <li>插件是<strong>平台资产</strong>；投影到 Hermes 时再变成 Hermes 可安装的 skill/plugin，不要按 Hermes 插件格式当主数据。</li>
+        <li>知识库广场一期只做<strong>登记 + 绑定外部知识服务</strong>，不在 GFast 里自研向量检索。</li>
+      </ol>
+    </section>
+
+    <div class="grid">
+      <section class="card c-portal">
+        <h3>统一门户与工作台</h3>
+        <p class="meta"><span class="tag g">GFast 前端</span> <span class="tag p1">一期</span></p>
+        <div class="items">
+          <div class="item p1">登录 / 租户切换</div>
+          <div class="item p1 now">Agent 工作台<small>选 Runtime · 看 Run</small></div>
+          <div class="item p1">后台菜单 / 权限路由</div>
+          <div class="item p2">待办 / 审批页</div>
+          <div class="item p3">各 Runtime 自带 UI<small>仅调试</small></div>
+        </div>
+      </section>
+
+      <section class="card c-gov">
+        <h3>组织、权限与治理</h3>
+        <p class="meta"><span class="tag g">复用 GFast IAM</span> <span class="tag p1">一期</span></p>
+        <div class="items">
+          <div class="item p1">用户 / 角色 / 部门</div>
+          <div class="item p1">多租户 · 数据权限</div>
+          <div class="item p1">配额 / 审计字段</div>
+          <div class="item p1">委派 Token<small>不透传主 JWT</small></div>
+          <div class="item p2">企业 SSO</div>
+        </div>
+      </section>
+
+      <section class="card c-plaza wide">
+        <h3>资源 / 资产广场（平台主权 · 统一资产模型）</h3>
+        <p class="meta"><span class="tag g">GFast 模块</span> · 一类资产一种 kind · 先 MCP 后其它</p>
+        <div class="items">
+          <div class="item p1 now">MCP / Tool 广场<small>第一步优先 · 含业务接口封装</small></div>
+          <div class="item p1">模型广场<small>路由、配额，密钥走 Vault/配置</small></div>
+          <div class="item p1">Runtime 注册<small>先登记 Hermes</small></div>
+          <div class="item p1">Skills 广场<small>平台定义，再投影</small></div>
+          <div class="item p1">插件广场<small>平台 Plugin Manifest，非 Hermes 私有格式</small></div>
+          <div class="item p1">知识库广场<small>登记 + 绑定外部 KB，不自研检索</small></div>
+          <div class="item p1">接口 / Connector<small>OpenAPI 等，可转为 MCP Tool</small></div>
+          <div class="item p2">Prompt / Agent 定义</div>
+          <div class="item p3">Agent Team / Workflow 模板</div>
+          <div class="item p1">版本 · 发布 · 上下架 · 依赖</div>
+        </div>
+        <p class="note">广场 = 登记「有什么」。投影 = 把配置推给 Hermes。Adapter = 运行时呼叫 Hermes。三者不要做成一个页面逻辑。</p>
+      </section>
+
+      <section class="card c-studio">
+        <h3>接入与配置（Studio 的一期形态）</h3>
+        <p class="meta"><span class="tag p1">一期做配置，不做完整画布</span></p>
+        <div class="items">
+          <div class="item p1 now">Hermes 连接配置<small>地址 / 健康检查</small></div>
+          <div class="item p1">MCP Server 接入</div>
+          <div class="item p1">模型 BaseURL / 路由</div>
+          <div class="item p1">知识库绑定<small>外部 Provider</small></div>
+          <div class="item p2">节点调试 / 灰度</div>
+          <div class="item p3">Workflow 画布</div>
+        </div>
+      </section>
+
+      <section class="card c-run">
+        <h3>运行与治理门</h3>
+        <p class="meta">广场做完 MCP 后立刻跟进，不要拖到「所有广场做完」</p>
+        <div class="items">
+          <div class="item p1">Run 中心<small>任务表调度</small></div>
+          <div class="item p1">MCP 治理门<small>权限 · 风险 · 配额 · 审计</small></div>
+          <div class="item p1">Hermes Adapter<small>start / stream / cancel</small></div>
+          <div class="item p1">Projection<small>单向推到 Hermes</small></div>
+          <div class="item p2">Temporal 长任务 / 审批</div>
+          <div class="item p3">A2A 委派</div>
+        </div>
+      </section>
+
+      <section class="card c-biz">
+        <h3>业务能力（经 GFast Tool 暴露）</h3>
+        <p class="meta"><span class="tag p1">一期：现有业务封装为 MCP Tool</span></p>
+        <div class="items">
+          <div class="item p1">GFast 业务 Tool<small>不绕过业务规则写库</small></div>
+          <div class="item p2">业务助手 / RAG 问答</div>
+          <div class="item p3">Code / 浏览器 / UE 专项</div>
+        </div>
+      </section>
+
+      <section class="card c-int">
+        <h3>外部能力（不进 GFast 主数据）</h3>
+        <p class="meta">广场登记元数据；真实能力在外部进程</p>
+        <div class="items">
+          <div class="item p1 now">Hermes-agent<small>一期 Runtime</small></div>
+          <div class="item p1">外部 MCP / 模型 API</div>
+          <div class="item p1">知识库引擎<small>如 WeKnora</small></div>
+          <div class="item p2">Temporal / NATS</div>
+          <div class="item p3">OpenCode / QwenPaw / Eino</div>
+        </div>
+      </section>
+    </div>
+
+    <p class="note" style="margin-top:16px">插件：平台统一 Manifest（版本、签名、权限、风险等级）。Hermes 定制发生在 <strong>Projection / Adapter</strong>：把平台插件翻译成 Hermes 可装格式。知识库广场：资产记录 + 外部绑定，检索/解析不在 GFast 重写。</p>
+    <footer>功能架构 · 与技术架构图、ARCHITECTURE.agents.md 同步维护 · 编码第一步：资产骨架 + Hermes 登记 + MCP/Tool</footer>
+  </div>
+</body>
+</html>
