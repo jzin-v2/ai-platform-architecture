@@ -240,7 +240,7 @@
         <p class="meta"><span class="tag gfast">GFast</span> <span class="tag p1">一期</span></p>
         <div class="boxes">
           <div class="box gfast p1">GFast 管理后台</div>
-          <div class="box gfast p1 highlight">Agent 工作台<small>Runtime 切换 · Run · 审批</small></div>
+          <div class="box gfast p1 highlight">Agent 工作台<small>Runtime 切换 · Run · 审计</small></div>
           <div class="box gfast">业务 H5 / 小程序<small>保持独立，不改造</small></div>
           <div class="box p3">各 Runtime 自带 UI<small>仅内部调试，不作为门户</small></div>
         </div>
@@ -288,7 +288,7 @@
         <p class="meta"><span class="tag p1">一期：GFast 任务表</span> · <span class="tag p2">二期：Temporal / NATS 现成产品</span></p>
         <div class="boxes">
           <div class="box gfast p1 highlight">任务表 + 异步调用 Runtime</div>
-          <div class="box ext p2">Temporal<small>长任务 · 审批 · 恢复</small></div>
+          <div class="box ext p2">Temporal<small>长任务 ·  恢复</small></div>
           <div class="box ext p2">NATS JetStream<small>事件总线</small></div>
         </div>
         <div class="explain">Temporal / NATS 是外部基础设施，不是 GFast 内自研调度器。一期用任务表跑通主路径，出现长等待与强恢复需求再引入。</div>
@@ -311,7 +311,7 @@
         <h3>⑥ 网关层 Gateway = 工具治理</h3>
         <p class="meta"><span class="tag gfast">GFast 中间件 / 模块</span> <span class="tag p1">一期 MCP 治理门</span> · <span class="tag p3">三期 A2A</span></p>
         <div class="boxes">
-          <div class="box gfast p1 highlight">MCP 治理门<small>权限 · Schema · 风险 · 配额 · 审批 · 审计</small></div>
+          <div class="box gfast p1 highlight">MCP 治理门<small>权限 · Schema · 风险 · 配额 ·  审计</small></div>
           <div class="box p3">A2A Gateway<small>发现 · 委派 · 熔断</small></div>
         </div>
         <div class="explain">Runtime 调用业务 Tool / 外部 MCP 必须经此门，禁止直连业务库。一期与权限数据同仓实现，降低联调成本。</div>
