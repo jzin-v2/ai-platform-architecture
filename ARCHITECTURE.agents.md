@@ -133,7 +133,7 @@ workspace/
 
 | 层 | 职责 | 代码落点 | 期次 |
 |---|---|---|---|
-| ① 展示 | 统一门户、Agent 工作台 | `gfast` 前端 | 一期 |
+| ① 展示 | 管理后台 + Runtime 对话 iframe 壳 | `gfast` 前端壳 + embed | 一期 |
 | ② 身份 | 登录、RBAC、多租户、换票 | `gfast` IAM + Nginx/Caddy | 一期 |
 | ③ Core | 资产、模型、Run、审计、业务 MCP Provider | `gfast` AI 模块包 | 一期 |
 | ③′ Projection | 配置单向投影到 Runtime | `gfast` **一个** Projection 模块 | 一期→Hermes |
@@ -161,7 +161,7 @@ workspace/
 ## 5. 推荐调用链（一期）
 
 ```text
-用户 → GFast 门户/工作台
+用户 → GFast 管理后台 / Runtime 对话 iframe
     → GFast 鉴权（RBAC/租户）
     → 创建 Run（绑定 asset 版本）
     → 任务表异步执行
