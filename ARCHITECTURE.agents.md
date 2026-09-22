@@ -38,18 +38,29 @@ workspace/
 
 ### 1.1 目标
 
-- 多租户 AI 业务平台：统一门户、统一身份权限、统一资产与审计
+- 多公司（一级部门）AI 业务平台：统一门户、统一身份权限、统一资产与审计；公司边界 = GFast 一级部门
 - Agent 能力用**持续更新的现成框架**（先 Hermes，后其它），少自研 Runtime
 - 一人可维护：优先 **GFast 模块**，早期**不拆微服务丛林**
 
 ### 1.2 硬原则
 
-1. **平台主权（SoT）在 GFast**：租户、用户、RBAC、资产广场、模型路由、Run/审计、配额
+1. **平台主权（SoT）在 GFast**：用户、RBAC、部门、资产广场、模型路由、Run/审计、配额。**不另建 tenant**；**一级部门（dept）= 公司 = 租户**，资产与 Run 用 `dept_id` 隔离
 2. **Runtime 可插拔**：Hermes / OpenCode / QwenPaw / Eino / Dify Legacy 均为外部 Runtime Plugin
-3. **单向投影**：平台 → Runtime 下发配置；禁止用户/角色双向全量同步与影子账号泛滥
+3. **单向投影**：平台 → Runtime 下发配置；禁止用户/角色双向全量同步与影子账号泛滥；隔离键用 `dept_id`（一级部门），不用独立 `tenant_id`
 4. **工具必经治理门**：业务 Tool / MCP 调用必须经 GFast MCP 治理中间件，禁止 Runtime 直连业务库
 5. **不透传主 JWT**：给 Runtime 的是短期、受众绑定的委派 Token / Service Account
 6. **危险动作在沙箱**：终端/文件/浏览器等不在 GFast 主进程直接 exec
+7. **公司边界用 dept_id**：不引入独立租户表。GFast RBAC 中**一级部门 = 一个公司 = 一个租户**；资产、投影、Run、配额均挂 `dept_id`（一级部门 ID）。子部门用户归属于其一级部门数据范围。
+
+### 1.3 公司边界 = 一级部门（dept_id）
+
+| 概念 | 落点 |
+|---|---|
+| 公司 / 租户 | GFast 一级部门 |
+| 隔离字段 | `dept_id`（不要 `tenant_id`） |
+| 数据权限 | 复用 GFast 部门数据权限 |
+| 资产归属 | 创建时写入所属一级部门 ID |
+
 
 ---
 
@@ -59,7 +70,7 @@ workspace/
 
 在 `gfast/` 实现：
 
-- 登录 / RBAC / 多租户（复用 GFast）
+- 登录 / RBAC / 一级部门隔离（复用 GFast；dept_id = 公司）
 - 资源/资产广场（MCP、Skills、插件、模型元数据）
 - Agent 工作台（选择/切换 Runtime，查看 Run，审批入口）
 - Run 中心 + 审计字段
@@ -73,7 +84,7 @@ workspace/
 
 按此顺序提交代码，**不要四个广场并行开工**：
 
-1. `gfast/`：统一资产模型（`kind/version/tenant/status/visibility`）+ 资源广场菜单骨架
+1. `gfast/`：统一资产模型（`kind/version/dept_id/status/visibility`）+ 资源广场菜单骨架；`dept_id` = 一级部门（公司）
 2. `gfast/`：Runtime 注册，先登记 Hermes（地址、健康检查、启用）
 3. 广场**先做 MCP/Tool 一种 kind**（含把现有业务接口封装为 Tool 的登记）
 4. 同一资产模型再加 Skills、接口/Connector、知识库、插件（页面可后做）

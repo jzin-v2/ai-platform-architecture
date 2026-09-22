@@ -200,7 +200,7 @@
       <section class="phase-card p1">
         <h2><span class="badge">一期</span> 可运行最小闭环</h2>
         <ul>
-          <li>GFast：登录/RBAC/多租户、资源广场、Agent 工作台、Run 中心</li>
+          <li>GFast：登录/RBAC/多公司(一级部门)、资源广场、Agent 工作台、Run 中心</li>
           <li>接入 Hermes-agent（Runtime）+ Hermes Adapter</li>
           <li>Projection：模型路由 / MCP 白名单 / 委派身份 → Hermes</li>
           <li>MCP 治理门（权限、风险、配额、审计）</li>
@@ -252,7 +252,7 @@
         <p class="meta"><span class="tag gfast">GFast IAM</span> <span class="tag p1">一期</span> · <span class="tag p2">二期可选企业 IdP</span></p>
         <div class="boxes">
           <div class="box ext p1">Nginx / Caddy<small>HTTPS · 反代</small></div>
-          <div class="box gfast p1">登录 · RBAC · 多租户</div>
+          <div class="box gfast p1">登录 · RBAC · 多公司(一级部门)</div>
           <div class="box gfast p1">短期委派 Token<small>禁止透传主 JWT</small></div>
           <div class="box p2">Keycloak / 企业 IdP<small>SSO 前置</small></div>
         </div>
@@ -304,7 +304,7 @@
           <div class="box p3">Eino<small>目标原生 Runtime</small></div>
           <div class="box p3">Dify Legacy<small>仅兼容存量</small></div>
         </div>
-        <div class="explain">不魔改第三方源码进 GFast。通过 Adapter 调用；正式多租户前必须做到租户 / Run 级隔离（二期强化）。</div>
+        <div class="explain">不魔改第三方源码进 GFast。通过 Adapter 调用；正式多公司(一级部门)前必须做到租户 / Run 级隔离（二期强化）。</div>
       </section>
 
       <section class="layer l6" id="layer-6">
@@ -374,7 +374,7 @@
           </tr>
           <tr>
             <th>② 身份</th>
-            <td>登录、RBAC、多租户、换票</td>
+            <td>登录、RBAC、多公司(一级部门)、换票</td>
             <td><span class="tag gfast">GFast IAM</span> + <span class="tag ext">反代</span></td>
             <td><span class="tag p1">一期</span> <span class="tag p2">二期 SSO</span></td>
           </tr>
@@ -446,8 +446,8 @@
         <ul>
           <li>为每个概念拆独立微服务（早期交付与维护成本过高）</li>
           <li>将第三方 Runtime 源码深度揉进 GFast 并魔改</li>
-          <li>以 Hermes / 其它框架 Dashboard 作为多租户统一门户</li>
-          <li>多租户共用同一 Runtime HOME / 会话库</li>
+          <li>以 Hermes / 其它框架 Dashboard 作为多公司(一级部门)统一门户</li>
+          <li>多公司(一级部门)共用同一 Runtime HOME / 会话库</li>
           <li>Runtime 直连平台主库；透传用户主 JWT</li>
           <li>绕过 MCP 治理门调用高危 Tool</li>
           <li>一期同时铺开 Temporal + A2A + 多 Worker + 多 Runtime</li>

@@ -101,8 +101,8 @@
 
     <div class="idea">
       <strong>一句话：</strong>MCP、Skills、知识库、插件、模型、Runtime 在后台看起来像多个菜单，但数据库里先共用<strong>同一张资产主表</strong>。
-      公共字段管「是谁的、哪个版本、能不能用」；每种类型自己的细节塞进 <code>spec</code>（JSON）。
-      这样后面加新类型主要是加 <code>kind</code>，不用每样资源各造一套完全不同的表和权限模型。
+      公共字段管「属于哪个一级部门(公司)、哪个版本、能不能用」；每种类型自己的细节塞进 <code>spec</code>（JSON）。
+      这样后面加新类型主要是加 <code>kind</code>，不用每样资源各造一套完全不同的表和权限模型。<br><strong>多租户：</strong>不另建 tenant 表。直接用 GFast 的 <code>dept_id</code>；<strong>一级部门 = 一个公司 = 一个租户</strong>。资产、Run、投影均按一级部门隔离。
     </div>
 
     <h2>1. 公共字段 vs 各自细节</h2>
@@ -111,7 +111,7 @@
         <h3>所有资产都有的字段（核心）</h3>
         <div class="fields">
           <div class="field core"><b>id</b><span>主键</span></div>
-          <div class="field core"><b>tenant_id</b><span>租户</span></div>
+          <div class="field core"><b>dept_id</b><span>一级部门 = 公司/租户（复用 GFast RBAC）</span></div>
           <div class="field core"><b>kind</b><span>类型：mcp / skill / …</span></div>
           <div class="field core"><b>name</b><span>显示名</span></div>
           <div class="field core"><b>version</b><span>如 1.0.0</span></div>
@@ -133,6 +133,9 @@
         </div>
       </div>
     </div>
+
+    
+    <p class="note"><strong>dept_id 约定：</strong>写入资产时存「一级部门」ID（公司根部门）。子部门用户创建的资产，默认归属其一级部门；列表过滤与 GFast 数据权限一致，不要再引入独立 tenant_id。</p>
 
     <div class="arrow">↓ 同一张表里的不同 kind（示意数据）</div>
     <div class="kinds">
@@ -178,7 +181,7 @@
               <th>kind</th>
               <th>名称</th>
               <th>version</th>
-              <th>tenant</th>
+              <th>dept_id</th>
               <th>status</th>
               <th>说明</th>
             </tr>
@@ -188,7 +191,7 @@
               <td><span class="pill k-rt">runtime</span></td>
               <td>hermes-local</td>
               <td>1.0.0</td>
-              <td>tenant_demo</td>
+              <td>dept_100（一级部门·公司A）</td>
               <td><span class="pill st-pub">published</span></td>
               <td>http://127.0.0.1:… 健康检查 OK</td>
             </tr>
@@ -196,7 +199,7 @@
               <td><span class="pill k-mcp">mcp</span></td>
               <td>gfast.question.create</td>
               <td>1.0.0</td>
-              <td>tenant_demo</td>
+              <td>dept_100（一级部门·公司A）</td>
               <td><span class="pill st-pub">published</span></td>
               <td>创建题目草稿 · 风险 L1</td>
             </tr>
@@ -204,7 +207,7 @@
               <td><span class="pill k-mcp">mcp</span></td>
               <td>ext.filesystem.read</td>
               <td>0.3.1</td>
-              <td>tenant_demo</td>
+              <td>dept_100（一级部门·公司A）</td>
               <td><span class="pill st-draft">draft</span></td>
               <td>外部 MCP，尚未发布</td>
             </tr>
@@ -212,7 +215,7 @@
               <td><span class="pill k-kb">knowledge_base</span></td>
               <td>课程教材库</td>
               <td>2.1.0</td>
-              <td>tenant_demo</td>
+              <td>dept_100（一级部门·公司A）</td>
               <td><span class="pill st-draft">draft</span></td>
               <td>绑定外部 KB（示意，页面后做）</td>
             </tr>
@@ -226,7 +229,7 @@
       <h2 style="margin:0 0 6px;font-size:.95rem;">3. 一条资产长什么样（示意 JSON）</h2>
       <pre>{
   "id": "ast_01H...",
-  "tenant_id": "tenant_demo",
+  "dept_id": 100,                 // 一级部门 ID；在 GFast RBAC 中一级部门 = 公司 = 租户
   "kind": "mcp",                 // 换 kind 就是另一种广场资源
   "name": "gfast.question.create",
   "version": "1.0.0",            // 已发布版本尽量不可变

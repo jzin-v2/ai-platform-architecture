@@ -76,7 +76,7 @@
     <section class="first">
       <h2>编码第一步（GFast 已启动、Hermes 已启动之后）</h2>
       <ol>
-        <li><strong>统一资产模型 + 广场骨架</strong>：一张资产表（kind / version / 租户 / 状态 / 可见性），后台菜单「资源广场」。</li>
+        <li><strong>统一资产模型 + 广场骨架</strong>：一张资产表（kind / version / dept_id / 状态 / 可见性）；一级部门=公司，后台菜单「资源广场」。</li>
         <li><strong>登记 Hermes Runtime</strong>：地址、健康检查、启用状态。工作台能选中它，但先不追求完整对话闭环。</li>
         <li><strong>广场先落地一种类型：MCP / Tool</strong>。Skills、接口、知识库用同一模型加 kind，页面随后做，不要四个广场并行开工。</li>
         <li>插件是<strong>平台资产</strong>；投影到 Hermes 时再变成 Hermes 可安装的 skill/plugin，不要按 Hermes 插件格式当主数据。</li>
@@ -89,7 +89,7 @@
         <h3>统一门户与工作台</h3>
         <p class="meta"><span class="tag g">GFast 前端</span> <span class="tag p1">一期</span></p>
         <div class="items">
-          <div class="item p1">登录 / 租户切换</div>
+          <div class="item p1">登录 / 部门(公司)切换</div>
           <div class="item p1 now">Agent 工作台<small>选 Runtime · 看 Run</small></div>
           <div class="item p1">后台菜单 / 权限路由</div>
           <div class="item p2">待办 / 审批页</div>
@@ -102,7 +102,7 @@
         <p class="meta"><span class="tag g">复用 GFast IAM</span> <span class="tag p1">一期</span></p>
         <div class="items">
           <div class="item p1">用户 / 角色 / 部门</div>
-          <div class="item p1">多租户 · 数据权限</div>
+          <div class="item p1">一级部门隔离 · 数据权限（dept_id）</div>
           <div class="item p1">配额 / 审计字段</div>
           <div class="item p1">委派 Token<small>不透传主 JWT</small></div>
           <div class="item p2">企业 SSO</div>
