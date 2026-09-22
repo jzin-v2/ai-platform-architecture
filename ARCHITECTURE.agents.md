@@ -61,6 +61,16 @@ workspace/
 | 数据权限 | 复用 GFast 部门数据权限 |
 | 资产归属 | 创建时写入所属一级部门 ID |
 
+### 1.4 不做人工审批流
+
+产品取舍：**不做人审 / Human-in-the-loop 审批**。人有惰性，流程会拖死交付。
+
+- Tool 仍可有风险等级，用于限流、告警、审计标记
+- 调用经 MCP 治理门校验权限与配额后**直接执行**
+- 全量记审计（谁、哪个 dept、哪个 Run、调了什么）
+- 出问题：**找管理员事后排查/封禁/改权限**，不在运行路径上卡「待审批」
+
+
 
 ---
 
@@ -72,11 +82,11 @@ workspace/
 
 - 登录 / RBAC / 一级部门隔离（复用 GFast；dept_id = 公司）
 - 资源/资产广场（MCP、Skills、插件、模型元数据）
-- Agent 工作台（选择/切换 Runtime，查看 Run，审批入口）
+- Agent 工作台（选择/切换 Runtime，查看 Run）
 - Run 中心 + 审计字段
 - **Projection 单模块**：把模型路由、MCP 白名单、委派身份等推到 Hermes
 - **Hermes Adapter**：`start` / `stream` / `cancel` / 事件归一成平台 Run Event
-- **MCP 治理门**：权限、风险等级、配额、审计后再转发 Tool
+- **MCP 治理门**：权限、风险等级、配额、审计后转发 Tool（**无人工审批**；出问题管理员事后处理）
 - **任务表异步调度**（不上 Temporal）
 - Hermes 以 **Docker/容器** 运行；业务 H5/小程序**不动**
 
@@ -96,7 +106,7 @@ workspace/
 
 ### 二期 — 编排与隔离强化
 
-- 引入 **Temporal**（长任务、暂停恢复、人工审批）
+- 引入 **Temporal**（长任务、暂停恢复、可靠重试；仍不默认上人工审批流）
 - 按需 **NATS JetStream**
 - 每租户 / 每 Run 强化 Hermes 进程与目录隔离
 - 观测（成本、告警）；可选企业 SSO（Keycloak 等）前置
@@ -224,7 +234,8 @@ gfast/
 - 绕过 MCP 治理门调高危 Tool  
 - 多租户共用同一 Runtime HOME  
 - 已发布资产无版本热改  
-- 一期同时上 Temporal + A2A + 多 Worker + 多 Runtime  
+- 一期同时上 Temporal + A2A + 多 Worker + 多 Runtime
+- 在主路径上做人审/待审批节点（出问题找管理员即可）  
 
 ---
 

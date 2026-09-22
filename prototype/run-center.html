@@ -29,7 +29,7 @@
       <div class="top">
         <div>
           <div class="title">Run 中心</div>
-          <div class="meta">任务表调度 · 状态 · 审计入口</div>
+          <div class="meta">任务表调度 · 状态 · 审计（无人工审批）</div>
         </div>
         <div class="meta">过滤：当前一级部门 dept_id=100</div>
       </div>
@@ -38,7 +38,7 @@
           <div class="card"><span class="muted">今日 Run</span><b>128</b></div>
           <div class="card"><span class="muted">运行中</span><b>3</b></div>
           <div class="card"><span class="muted">失败</span><b>2</b></div>
-          <div class="card"><span class="muted">待审批</span><b>1</b></div>
+          <div class="card"><span class="muted">已成功</span><b>123</b></div>
         </div>
         <div class="card">
           <div class="toolbar">
@@ -82,9 +82,9 @@
                 <td>hermes-local</td>
                 <td>张三</td>
                 <td>100</td>
-                <td><span class="pill wait">waiting_approval</span></td>
-                <td>发布题目（L2）</td>
-                <td>审批</td>
+                <td><span class="pill ok">succeeded</span></td>
+                <td>发布题目（已执行，审计留痕）</td>
+                <td>详情</td>
               </tr>
               <tr>
                 <td>run_01H5</td>
@@ -97,7 +97,7 @@
               </tr>
             </tbody>
           </table>
-          <p class="muted" style="margin-top:10px">一期用任务表，不上 Temporal。列表必须带 dept_id，禁止跨一级部门看见别人公司的 Run。</p>
+          <p class="muted" style="margin-top:10px">一期用任务表，不上 Temporal。无人工审批流：高风险也直接执行并写审计，出问题由管理员事后处理。列表必须带 dept_id。</p>
         </div>
       </div>
     </div>
