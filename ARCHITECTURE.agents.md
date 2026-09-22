@@ -70,6 +70,13 @@ workspace/
 - 全量记审计（谁、哪个 dept、哪个 Run、调了什么）
 - 出问题：**找管理员事后排查/封禁/改权限**，不在运行路径上卡「待审批」
 
+### 1.5 对话 UI = Runtime iframe / 外部嵌入（不自建 Agent 工作台）
+
+- **删除**自研「AI 平台 → Agent 工作台」对话产品形态
+- Hermes / 其它 Runtime 若提供 chat iframe、embed SDK、独立前端路由，GFast **直接接入**
+- GFast 仍负责：资源广场、Runtime 注册（含 `embed_url`）、Projection、MCP 治理门、Run 审计
+- 禁止把 Runtime 控制台当成多租户权限与资产主数据后台；主数据仍在 GFast
+
 
 
 ---
@@ -82,7 +89,7 @@ workspace/
 
 - 登录 / RBAC / 一级部门隔离（复用 GFast；dept_id = 公司）
 - 资源/资产广场（MCP、Skills、插件、模型元数据）
-- Agent 工作台（选择/切换 Runtime，查看 Run）
+- **不自建 Agent 对话工作台**；对话 UI 使用 Runtime 提供的 **iframe / 嵌入接口**（如 Hermes embed）。GFast 只做壳：选 Runtime、注入 dept_id/委派凭证、承载 iframe
 - Run 中心 + 审计字段
 - **Projection 单模块**：把模型路由、MCP 白名单、委派身份等推到 Hermes
 - **Hermes Adapter**：`start` / `stream` / `cancel` / 事件归一成平台 Run Event
@@ -102,7 +109,7 @@ workspace/
 6. 知识库广场 = **登记 + 绑定外部知识服务**，不在 GFast 自研向量检索
 7. MCP/Tool 能登记后，再做 MCP 治理门 → Hermes Adapter → Projection → Run 中心闭环
 
-当前未点名二期/三期时，智能体只实现以上第一步到闭环，不铺 Workflow 画布 / Temporal / A2A。
+当前未点名二期/三期时，智能体只实现以上第一步到闭环，不铺自研对话 UI / Workflow 画布 / Temporal / A2A。对话页用 Runtime iframe。
 
 ### 二期 — 编排与隔离强化
 
@@ -180,7 +187,7 @@ Hermes → 持有用户主 JWT / 管理员永久 Token
 ```text
 gfast/
 ├── modules/ai_asset/          # 资源广场、版本、上下架
-├── modules/ai_runtime/        # Runtime 注册、切换、工作台 API
+├── modules/ai_runtime/        # Runtime 注册、embed_url、健康检查
 ├── modules/ai_projection/     # 单向投影（先 Hermes）
 ├── modules/ai_adapter_hermes/ # Hermes Adapter
 ├── modules/ai_mcp_gateway/    # MCP 治理门
@@ -235,7 +242,8 @@ gfast/
 - 多租户共用同一 Runtime HOME  
 - 已发布资产无版本热改  
 - 一期同时上 Temporal + A2A + 多 Worker + 多 Runtime
-- 在主路径上做人审/待审批节点（出问题找管理员即可）  
+- 在主路径上做人审/待审批节点（出问题找管理员即可）
+- 自研「AI 平台 Agent 工作台」对话 UI（应使用 Runtime iframe/嵌入接口）  
 
 ---
 
