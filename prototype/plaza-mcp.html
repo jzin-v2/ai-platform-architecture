@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MCP / Tool 广场 · 原型</title>
+  <link rel="stylesheet" href="./_styles.css" />
+</head>
+<body>
+  <div class="app">
+    
+<aside class="side">
+  <div class="logo">GFast · AI 平台</div>
+  <div class="g">AI 平台</div>
+  <a class="item" href="./agent-workbench.html" data-nav="workbench">Agent 工作台</a>
+  <a class="item" href="./run-center.html" data-nav="run">Run 中心</a>
+  <div class="g">资源广场</div>
+  <a class="item dim" href="./plaza-mcp.html" data-nav="mcp">MCP / Tool</a>
+  <a class="item dim" href="#" title="后做">Skills</a>
+  <a class="item dim" href="#" title="后做">知识库</a>
+  <a class="item dim" href="#" title="后做">插件</a>
+  <a class="item dim" href="#" title="后做">模型</a>
+  <a class="item dim" href="./runtime.html" data-nav="runtime">Runtime 注册</a>
+  <div class="g">业务</div>
+  <a class="item dim" href="#">原有 CRUD…</a>
+</aside>
+
+    <div class="main">
+      <div class="top">
+        <div>
+          <div class="title">MCP / Tool 广场</div>
+          <div class="meta">统一资产 kind=mcp · 第一步优先落地的广场</div>
+        </div>
+        <div class="meta">dept_id=100</div>
+      </div>
+      <div class="content">
+        <div class="card">
+          <div class="toolbar">
+            <button class="btn primary">新建 Tool</button>
+            <button class="btn">从业务接口封装</button>
+          </div>
+          <table>
+            <thead>
+              <tr><th>名称</th><th>version</th><th>dept_id</th><th>风险</th><th>status</th><th>说明</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>gfast.question.create</td>
+                <td>1.0.0</td>
+                <td>100</td>
+                <td>L1</td>
+                <td><span class="pill ok">published</span></td>
+                <td>创建题目草稿</td>
+              </tr>
+              <tr>
+                <td>ext.search.web</td>
+                <td>0.2.0</td>
+                <td>100</td>
+                <td>L0</td>
+                <td><span class="pill wait">draft</span></td>
+                <td>外部 MCP</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="muted" style="margin-top:10px">Skills / 知识库 / 插件菜单可先灰置；同一资产表不同 kind。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.querySelectorAll('[data-nav=mcp]').forEach(e=>{e.classList.add('on');e.classList.remove('dim')})
+  </script>
+</body>
+</html>

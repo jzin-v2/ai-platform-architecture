@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Runtime 注册 · 原型</title>
+  <link rel="stylesheet" href="./_styles.css" />
+</head>
+<body>
+  <div class="app">
+    
+<aside class="side">
+  <div class="logo">GFast · AI 平台</div>
+  <div class="g">AI 平台</div>
+  <a class="item" href="./agent-workbench.html" data-nav="workbench">Agent 工作台</a>
+  <a class="item" href="./run-center.html" data-nav="run">Run 中心</a>
+  <div class="g">资源广场</div>
+  <a class="item dim" href="./plaza-mcp.html" data-nav="mcp">MCP / Tool</a>
+  <a class="item dim" href="#" title="后做">Skills</a>
+  <a class="item dim" href="#" title="后做">知识库</a>
+  <a class="item dim" href="#" title="后做">插件</a>
+  <a class="item dim" href="#" title="后做">模型</a>
+  <a class="item dim" href="./runtime.html" data-nav="runtime">Runtime 注册</a>
+  <div class="g">业务</div>
+  <a class="item dim" href="#">原有 CRUD…</a>
+</aside>
+
+    <div class="main">
+      <div class="top">
+        <div>
+          <div class="title">Runtime 注册</div>
+          <div class="meta">一期先登记 Hermes</div>
+        </div>
+        <div class="meta">资产 kind=runtime · dept_id=100</div>
+      </div>
+      <div class="content">
+        <div class="card row">
+          <div class="col">
+            <label>名称</label>
+            <input value="hermes-local" />
+            <div style="height:8px"></div>
+            <label>Base URL</label>
+            <input value="http://127.0.0.1:9119" />
+            <div style="height:8px"></div>
+            <label>健康检查</label>
+            <input value="/health" />
+            <div class="toolbar">
+              <button class="btn primary">保存并启用</button>
+              <button class="btn">测连通</button>
+            </div>
+          </div>
+          <div class="col">
+            <label>状态</label>
+            <div><span class="pill ok">healthy</span></div>
+            <p class="muted" style="margin-top:12px">不把 Hermes Dashboard 当门户；平台只保存连接信息与版本，通过 Adapter 调用。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>document.querySelectorAll('[data-nav=runtime]').forEach(e=>e.classList.add('on'))</script>
+</body>
+</html>

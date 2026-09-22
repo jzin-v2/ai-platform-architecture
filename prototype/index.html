@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI 平台后台原型</title>
+  <link rel="stylesheet" href="./_styles.css" />
+</head>
+<body>
+  <div class="app">
+    
+<aside class="side">
+  <div class="logo">GFast · AI 平台</div>
+  <div class="g">AI 平台</div>
+  <a class="item" href="./agent-workbench.html" data-nav="workbench">Agent 工作台</a>
+  <a class="item" href="./run-center.html" data-nav="run">Run 中心</a>
+  <div class="g">资源广场</div>
+  <a class="item dim" href="./plaza-mcp.html" data-nav="mcp">MCP / Tool</a>
+  <a class="item dim" href="#" title="后做">Skills</a>
+  <a class="item dim" href="#" title="后做">知识库</a>
+  <a class="item dim" href="#" title="后做">插件</a>
+  <a class="item dim" href="#" title="后做">模型</a>
+  <a class="item dim" href="./runtime.html" data-nav="runtime">Runtime 注册</a>
+  <div class="g">业务</div>
+  <a class="item dim" href="#">原有 CRUD…</a>
+</aside>
+
+    <div class="main">
+      <div class="top">
+        <div>
+          <div class="title">原型入口</div>
+          <div class="meta">先画菜单壳 → Agent 工作台 → Run 中心；资源广场下一屏</div>
+        </div>
+        <div class="meta">部门：一级部门·公司A（dept_id=100）</div>
+      </div>
+      <div class="content">
+        <div class="banner">编码仍按：资产模型 → Runtime 登记 → MCP/Tool。原型浏览顺序可以先看工作台与 Run，方便对齐后台菜单。</div>
+        <div class="card">
+          <div class="navlinks">
+            <a href="./agent-workbench.html">1. Agent 工作台</a>
+            <a href="./run-center.html">2. Run 中心</a>
+            <a href="./runtime.html">3. Runtime 登记（Hermes）</a>
+            <a href="./plaza-mcp.html">4. MCP / Tool 广场</a>
+          </div>
+          <p class="muted" style="margin-top:12px">侧栏结构：AI 平台 → Agent 工作台 / Run 中心；资源广场 → MCP…；隔离字段用 dept_id（一级部门=公司）。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

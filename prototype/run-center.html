@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Run 中心 · 原型</title>
+  <link rel="stylesheet" href="./_styles.css" />
+</head>
+<body>
+  <div class="app">
+    
+<aside class="side">
+  <div class="logo">GFast · AI 平台</div>
+  <div class="g">AI 平台</div>
+  <a class="item" href="./agent-workbench.html" data-nav="workbench">Agent 工作台</a>
+  <a class="item" href="./run-center.html" data-nav="run">Run 中心</a>
+  <div class="g">资源广场</div>
+  <a class="item dim" href="./plaza-mcp.html" data-nav="mcp">MCP / Tool</a>
+  <a class="item dim" href="#" title="后做">Skills</a>
+  <a class="item dim" href="#" title="后做">知识库</a>
+  <a class="item dim" href="#" title="后做">插件</a>
+  <a class="item dim" href="#" title="后做">模型</a>
+  <a class="item dim" href="./runtime.html" data-nav="runtime">Runtime 注册</a>
+  <div class="g">业务</div>
+  <a class="item dim" href="#">原有 CRUD…</a>
+</aside>
+
+    <div class="main">
+      <div class="top">
+        <div>
+          <div class="title">Run 中心</div>
+          <div class="meta">任务表调度 · 状态 · 审计入口</div>
+        </div>
+        <div class="meta">过滤：当前一级部门 dept_id=100</div>
+      </div>
+      <div class="content">
+        <div class="kpi">
+          <div class="card"><span class="muted">今日 Run</span><b>128</b></div>
+          <div class="card"><span class="muted">运行中</span><b>3</b></div>
+          <div class="card"><span class="muted">失败</span><b>2</b></div>
+          <div class="card"><span class="muted">待审批</span><b>1</b></div>
+        </div>
+        <div class="card">
+          <div class="toolbar">
+            <button class="btn">刷新</button>
+            <button class="btn">仅失败</button>
+            <button class="btn">仅本部门</button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>run_id</th>
+                <th>Runtime</th>
+                <th>发起人</th>
+                <th>dept_id</th>
+                <th>状态</th>
+                <th>摘要</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>run_01H8</td>
+                <td>hermes-local</td>
+                <td>张三</td>
+                <td>100</td>
+                <td><span class="pill run">running</span></td>
+                <td>生成选择题草稿</td>
+                <td><a href="./agent-workbench.html">详情</a></td>
+              </tr>
+              <tr>
+                <td>run_01H7</td>
+                <td>hermes-local</td>
+                <td>李四</td>
+                <td>100</td>
+                <td><span class="pill ok">succeeded</span></td>
+                <td>检索课程大纲</td>
+                <td>详情</td>
+              </tr>
+              <tr>
+                <td>run_01H6</td>
+                <td>hermes-local</td>
+                <td>张三</td>
+                <td>100</td>
+                <td><span class="pill wait">waiting_approval</span></td>
+                <td>发布题目（L2）</td>
+                <td>审批</td>
+              </tr>
+              <tr>
+                <td>run_01H5</td>
+                <td>hermes-local</td>
+                <td>王五</td>
+                <td>100</td>
+                <td><span class="pill fail">failed</span></td>
+                <td>MCP 超时</td>
+                <td>重试</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="muted" style="margin-top:10px">一期用任务表，不上 Temporal。列表必须带 dept_id，禁止跨一级部门看见别人公司的 Run。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>document.querySelectorAll('[data-nav=run]').forEach(e=>e.classList.add('on'))</script>
+</body>
+</html>
