@@ -7,9 +7,10 @@
 > 1. 本文件：`ARCHITECTURE.agents.md`（智能体约束与落地规则）
 > 2. 技术架构图：`index.html` → https://jzin-v2.github.io/ai-platform-architecture/
 > 3. 功能架构图：`functional.html` → https://jzin-v2.github.io/ai-platform-architecture/functional.html
+> 4. 统一资产示意：`asset-model.html` → https://jzin-v2.github.io/ai-platform-architecture/asset-model.html
 > 仓库：https://github.com/jzin-v2/ai-platform-architecture  
 >
-> 变更架构时：**同时更新上述三个文件**，并保持分期（一期/二期/三期）一致。
+> 变更架构时：**同时更新上述架构文件**，并保持分期（一期/二期/三期）一致。
 
 ---
 
