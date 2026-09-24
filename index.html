@@ -1,461 +1,462 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AI 平台总体技术架构</title>
-  <style>
-    :root {
-      --bg: #f6f7f9;
-      --text: #101828;
-      --muted: #667085;
-      --border: #d0d5dd;
-      --card: #fff;
-      --gfast: #ecfdf3;
-      --gfast-a: #12b76a;
-      --ext: #eff8ff;
-      --ext-a: #2e90fa;
-      --p1: #fffaeb;
-      --p1-a: #f79009;
-      --p2: #f4f3ff;
-      --p2-a: #7a5af8;
-      --p3: #f0f9ff;
-      --p3-a: #0ba5ec;
-      --danger: #fef3f2;
-      --danger-a: #f04438;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-    }
-    .page { max-width: 1180px; margin: 0 auto; padding: 28px 18px 72px; }
-    h1 { margin: 0 0 6px; font-size: 1.65rem; }
-    .sub { margin: 0 0 18px; color: var(--muted); font-size: .95rem; }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI 平台总体技术架构</title>
+    <style>
+        :root {
+            --bg: #f6f7f9;
+            --text: #101828;
+            --muted: #667085;
+            --border: #d0d5dd;
+            --card: #fff;
+            --gfast: #ecfdf3;
+            --gfast-a: #12b76a;
+            --ext: #eff8ff;
+            --ext-a: #2e90fa;
+            --p1: #fffaeb;
+            --p1-a: #f79009;
+            --p2: #f4f3ff;
+            --p2-a: #7a5af8;
+            --p3: #f0f9ff;
+            --p3-a: #0ba5ec;
+            --danger: #fef3f2;
+            --danger-a: #f04438;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+        }
+        .page { max-width: 1180px; margin: 0 auto; padding: 28px 18px 72px; }
+        h1 { margin: 0 0 6px; font-size: 1.65rem; }
+        .sub { margin: 0 0 18px; color: var(--muted); font-size: .95rem; }
 
-    .legend {
-      display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;
-    }
-    .chip {
-      display: inline-flex; align-items: center; gap: 6px;
-      border-radius: 999px; padding: 4px 10px; font-size: .78rem; font-weight: 600;
-      border: 1px solid var(--border); background: #fff;
-    }
-    .dot { width: 10px; height: 10px; border-radius: 50%; }
-    .dot.gfast { background: var(--gfast-a); }
-    .dot.ext { background: var(--ext-a); }
-    .dot.p1 { background: var(--p1-a); }
-    .dot.p2 { background: var(--p2-a); }
-    .dot.p3 { background: var(--p3-a); }
+        .legend {
+            display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;
+        }
+        .chip {
+            display: inline-flex; align-items: center; gap: 6px;
+            border-radius: 999px; padding: 4px 10px; font-size: .78rem; font-weight: 600;
+            border: 1px solid var(--border); background: #fff;
+        }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dot.gfast { background: var(--gfast-a); }
+        .dot.ext { background: var(--ext-a); }
+        .dot.p1 { background: var(--p1-a); }
+        .dot.p2 { background: var(--p2-a); }
+        .dot.p3 { background: var(--p3-a); }
 
-    .phases {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-bottom: 18px;
-    }
-    @media (max-width: 900px) { .phases { grid-template-columns: 1fr; } }
-    .phase-card {
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px 14px 12px;
-      position: relative;
-      overflow: hidden;
-    }
-    .phase-card::before {
-      content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px;
-      background: var(--accent);
-    }
-    .phase-card.p1 { --accent: var(--p1-a); }
-    .phase-card.p2 { --accent: var(--p2-a); }
-    .phase-card.p3 { --accent: var(--p3-a); }
-    .phase-card h2 {
-      margin: 0 0 6px; font-size: .98rem;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .badge {
-      font-size: .72rem; font-weight: 700; padding: 2px 8px;
-      border-radius: 999px; color: #fff; background: var(--accent);
-    }
-    .phase-card ul { margin: 0; padding-left: 1.15em; font-size: .82rem; }
-    .phase-card li { margin: 4px 0; }
+        .phases {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        @media (max-width: 900px) { .phases { grid-template-columns: 1fr; } }
+        .phase-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 14px 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        .phase-card::before {
+            content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px;
+            background: var(--accent);
+        }
+        .phase-card.p1 { --accent: var(--p1-a); }
+        .phase-card.p2 { --accent: var(--p2-a); }
+        .phase-card.p3 { --accent: var(--p3-a); }
+        .phase-card h2 {
+            margin: 0 0 6px; font-size: .98rem;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .badge {
+            font-size: .72rem; font-weight: 700; padding: 2px 8px;
+            border-radius: 999px; color: #fff; background: var(--accent);
+        }
+        .phase-card ul { margin: 0; padding-left: 1.15em; font-size: .82rem; }
+        .phase-card li { margin: 4px 0; }
 
-    .flow {
-      text-align: center; font-weight: 650; color: #0b5fff;
-      background: #e8f0ff; border: 1px solid #b7ccf7; border-radius: 10px;
-      padding: 12px 14px; margin-bottom: 16px; font-size: .88rem;
-    }
+        .flow {
+            text-align: center; font-weight: 650; color: #0b5fff;
+            background: #e8f0ff; border: 1px solid #b7ccf7; border-radius: 10px;
+            padding: 12px 14px; margin-bottom: 16px; font-size: .88rem;
+        }
 
-    .tag {
-      display: inline-block; font-size: .72rem; font-weight: 700;
-      padding: 2px 7px; border-radius: 6px; margin-right: 4px; white-space: nowrap;
-    }
-    .tag.gfast { background: var(--gfast); color: #027a48; }
-    .tag.ext { background: var(--ext); color: #175cd3; }
-    .tag.p1 { background: var(--p1); color: #b54708; }
-    .tag.p2 { background: var(--p2); color: #5925dc; }
-    .tag.p3 { background: var(--p3); color: #026aa2; }
+        .tag {
+            display: inline-block; font-size: .72rem; font-weight: 700;
+            padding: 2px 7px; border-radius: 6px; margin-right: 4px; white-space: nowrap;
+        }
+        .tag.gfast { background: var(--gfast); color: #027a48; }
+        .tag.ext { background: var(--ext); color: #175cd3; }
+        .tag.p1 { background: var(--p1); color: #b54708; }
+        .tag.p2 { background: var(--p2); color: #5925dc; }
+        .tag.p3 { background: var(--p3); color: #026aa2; }
 
-    .layers { display: flex; flex-direction: column; gap: 12px; }
-    .layer {
-      position: relative; border: 1.5px solid var(--border); border-radius: 12px;
-      padding: 12px 12px 12px 16px; background: #fff; overflow: hidden;
-    }
-    .layer::before {
-      content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 8px;
-      background: var(--accent, #98a2b3);
-    }
-    .layer h3 { margin: 0 0 8px; font-size: .95rem; }
-    .meta { font-size: .78rem; color: var(--muted); margin: 0 0 10px; }
-    .boxes { display: flex; flex-wrap: wrap; gap: 8px; }
-    .box {
-      background: #fff; border: 1px solid #c8cdd5; border-radius: 8px;
-      padding: 8px 10px; min-width: 130px; flex: 1 1 130px; text-align: center;
-      font-size: .85rem; font-weight: 550;
-    }
-    .box small { display: block; margin-top: 3px; color: var(--muted); font-weight: 400; font-size: .74rem; }
-    .box.gfast { background: var(--gfast); border-color: #abefc6; }
-    .box.ext { background: var(--ext); border-color: #b2ddff; }
-    .box.p1 { background: var(--p1); border-color: #f9dbaf; }
-    .box.p2 { background: var(--p2); border-color: #d9d6fe; }
-    .box.p3 { background: var(--p3); border-color: #b9e6fe; }
-    .box.highlight {
-      border: 2.5px solid #f79009; background: #fffaeb;
-      box-shadow: 0 0 0 3px rgba(247,144,9,.15);
-    }
-    .note { margin: 8px 0 0; font-size: .78rem; color: var(--muted); }
-    .explain {
-      margin-top: 10px; padding: 10px 12px; border-radius: 8px;
-      background: #f9fafb; border: 1px dashed #d0d5dd; font-size: .8rem;
-    }
+        .layers { display: flex; flex-direction: column; gap: 12px; }
+        .layer {
+            position: relative; border: 1.5px solid var(--border); border-radius: 12px;
+            padding: 12px 12px 12px 16px; background: #fff; overflow: hidden;
+        }
+        .layer::before {
+            content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 8px;
+            background: var(--accent, #98a2b3);
+        }
+        .layer h3 { margin: 0 0 8px; font-size: .95rem; }
+        .meta { font-size: .78rem; color: var(--muted); margin: 0 0 10px; }
+        .boxes { display: flex; flex-wrap: wrap; gap: 8px; }
+        .box {
+            background: #fff; border: 1px solid #c8cdd5; border-radius: 8px;
+            padding: 8px 10px; min-width: 130px; flex: 1 1 130px; text-align: center;
+            font-size: .85rem; font-weight: 550;
+        }
+        .box small { display: block; margin-top: 3px; color: var(--muted); font-weight: 400; font-size: .74rem; }
+        .box.gfast { background: var(--gfast); border-color: #abefc6; }
+        .box.ext { background: var(--ext); border-color: #b2ddff; }
+        .box.p1 { background: var(--p1); border-color: #f9dbaf; }
+        .box.p2 { background: var(--p2); border-color: #d9d6fe; }
+        .box.p3 { background: var(--p3); border-color: #b9e6fe; }
+        .box.highlight {
+            border: 2.5px solid #f79009; background: #fffaeb;
+            box-shadow: 0 0 0 3px rgba(247,144,9,.15);
+        }
+        .note { margin: 8px 0 0; font-size: .78rem; color: var(--muted); }
+        .explain {
+            margin-top: 10px; padding: 10px 12px; border-radius: 8px;
+            background: #f9fafb; border: 1px dashed #d0d5dd; font-size: .8rem;
+        }
 
-    .l1 { --accent: #2e90fa; }
-    .l2 { --accent: #667085; }
-    .l3 { --accent: #12b76a; }
-    .l3p { --accent: #f79009; }
-    .l4 { --accent: #fac515; }
-    .l5 { --accent: #f79009; }
-    .l6 { --accent: #f04438; }
-    .l7 { --accent: #15b79e; }
-    .l8 { --accent: #ee46bc; }
-    .l9 { --accent: #667085; }
+        .l1 { --accent: #2e90fa; }
+        .l2 { --accent: #667085; }
+        .l3 { --accent: #12b76a; }
+        .l3p { --accent: #f79009; }
+        .l4 { --accent: #fac515; }
+        .l5 { --accent: #f79009; }
+        .l6 { --accent: #f04438; }
+        .l7 { --accent: #15b79e; }
+        .l8 { --accent: #ee46bc; }
+        .l9 { --accent: #667085; }
 
-    .bottom {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px;
-    }
-    @media (max-width: 900px) { .bottom { grid-template-columns: 1fr; } }
-    .panel {
-      background: #fff; border: 1px solid var(--border); border-radius: 12px;
-      padding: 14px; position: relative; overflow: hidden;
-    }
-    .panel::before {
-      content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px;
-      background: var(--accent, #98a2b3);
-    }
-    .panel h3 { margin: 0 0 8px; font-size: .92rem; }
-    .panel ul { margin: 0; padding-left: 1.15em; font-size: .82rem; }
-    .panel li { margin: 5px 0; }
-    .panel.concepts { --accent: #12b76a; }
-    .panel.forbid { --accent: var(--danger-a); background: var(--danger); }
+        .bottom {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px;
+        }
+        @media (max-width: 900px) { .bottom { grid-template-columns: 1fr; } }
+        .panel {
+            background: #fff; border: 1px solid var(--border); border-radius: 12px;
+            padding: 14px; position: relative; overflow: hidden;
+        }
+        .panel::before {
+            content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px;
+            background: var(--accent, #98a2b3);
+        }
+        .panel h3 { margin: 0 0 8px; font-size: .92rem; }
+        .panel ul { margin: 0; padding-left: 1.15em; font-size: .82rem; }
+        .panel li { margin: 5px 0; }
+        .panel.concepts { --accent: #12b76a; }
+        .panel.forbid { --accent: var(--danger-a); background: var(--danger); }
 
-    .matrix {
-      margin-top: 18px;
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    .matrix h3 {
-      margin: 0; padding: 12px 14px; font-size: .95rem;
-      border-bottom: 1px solid var(--border); background: #f9fafb;
-    }
-    .matrix table { width: 100%; border-collapse: collapse; font-size: .82rem; }
-    .matrix th, .matrix td {
-      border-bottom: 1px solid #eaecf0; padding: 9px 10px; text-align: left; vertical-align: top;
-    }
-    .matrix th { color: var(--muted); font-weight: 600; background: #fcfcfd; width: 16%; }
-    .matrix tr:last-child td { border-bottom: none; }
+        .matrix {
+            margin-top: 18px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .matrix h3 {
+            margin: 0; padding: 12px 14px; font-size: .95rem;
+            border-bottom: 1px solid var(--border); background: #f9fafb;
+        }
+        .matrix table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+        .matrix th, .matrix td {
+            border-bottom: 1px solid #eaecf0; padding: 9px 10px; text-align: left; vertical-align: top;
+        }
+        .matrix th { color: var(--muted); font-weight: 600; background: #fcfcfd; width: 16%; }
+        .matrix tr:last-child td { border-bottom: none; }
 
-    footer { margin-top: 20px; text-align: center; color: var(--muted); font-size: .75rem; }
-  </style>
+        footer { margin-top: 20px; text-align: center; color: var(--muted); font-size: .75rem; }
+    </style>
 </head>
 <body>
-  <div class="page">
+<div class="page">
     <h1>AI 平台总体技术架构</h1>
-    <p class="sub">原则：平台主权（GFast）+ 可插拔 Runtime（现成框架）+ 单向投影同步。优先复用持续更新的成熟组件，控制面与门户统一在 GFast，Agent 能力通过 Adapter 接入。功能划分见 <a href="./functional.html">功能架构图</a>；编码约束见 <a href="./ARCHITECTURE.agents.md">ARCHITECTURE.agents.md</a>。</p>
+    <p class="sub">原则：平台主权（GFast）+ 可插拔 Runtime（现成框架）+ 单向投影同步。优先复用持续更新的成熟组件，控制面与门户统一在 GFast，Agent 能力通过 Adapter 接入。</p>
 
     <div class="legend">
-      <span class="chip"><span class="dot gfast"></span>GFast 模块</span>
-      <span class="chip"><span class="dot ext"></span>外部现成产品/服务</span>
-      <span class="chip"><span class="dot p1"></span>一期交付</span>
-      <span class="chip"><span class="dot p2"></span>二期增强</span>
-      <span class="chip"><span class="dot p3"></span>三期扩展</span>
+        <span class="chip"><span class="dot gfast"></span>GFast 模块</span>
+        <span class="chip"><span class="dot ext"></span>外部现成产品/服务</span>
+        <span class="chip"><span class="dot p1"></span>一期交付</span>
+        <span class="chip"><span class="dot p2"></span>二期增强</span>
+        <span class="chip"><span class="dot p3"></span>三期扩展</span>
     </div>
 
     <div class="phases">
-      <section class="phase-card p1">
-        <h2><span class="badge">一期</span> 可运行最小闭环</h2>
-        <ul>
-          <li>GFast：登录/RBAC/多公司(一级部门)、资源广场、对话壳(iframe)、Run 中心</li>
-          <li>接入 Hermes-agent（Runtime）+ Hermes Adapter</li>
-          <li>Projection：模型路由 / MCP 白名单 / 委派身份 → Hermes</li>
-          <li>MCP 治理门（权限、风险、配额、审计）</li>
-          <li>Docker 沙箱隔离；任务表异步调度（暂不上 Temporal）</li>
-        </ul>
-      </section>
-      <section class="phase-card p2">
-        <h2><span class="badge">二期</span> 可靠编排与隔离强化</h2>
-        <ul>
-          <li>引入 Temporal（长任务、暂停恢复、审计告警）</li>
-          <li>按需引入 NATS JetStream（事件解耦）</li>
-          <li>每租户 / 每 Run 强化 Hermes 进程与目录隔离</li>
-          <li>完善评测、成本看板、告警</li>
-          <li>可选企业 SSO（Keycloak / 企业 IdP）前置</li>
-        </ul>
-      </section>
-      <section class="phase-card p3">
-        <h2><span class="badge">三期</span> 多 Runtime 与自动化</h2>
-        <ul>
-          <li>接入 OpenCode、QwenPaw、Eino 等更多 Runtime</li>
-          <li>A2A Gateway（跨 Agent 协作）</li>
-          <li>独立 Browser / Code Worker；E2B 等沙箱</li>
-          <li>Dify 仅作 Legacy 兼容运行时</li>
-          <li>UE / GPU 等专项 Worker（按业务需要）</li>
-        </ul>
-      </section>
+        <section class="phase-card p1">
+            <h2><span class="badge">一期</span> 可运行最小闭环</h2>
+            <ul>
+                <li>GFast：登录/RBAC/多租户、MCP 广场（技能和插件占位）、Agent 工作台、Run 中心。部门数据权限用 GetAuthDeptWhere，公司边界仍是一级部门；广场按一级部门可见，订阅后才能被 Agent 选用</li>
+                <li>接入 Hermes-agent（Runtime）+ Hermes Adapter</li>
+                <li>已落地：Agent 对话由适配器按投影目录拉起本机 hermes serve（tui_gateway），门户续聊、流式、附件，以及投影目录内文件的预览和下载，都不直连 Hermes</li>
+                <li>Projection：模型路由 / MCP 白名单 / 委派身份 → Hermes</li>
+                <li>MCP 不做调用拦截：GFast 只登记并按 Runtime 映射。Hermes 独有参数只写入 Hermes</li>
+                <li>尚未做：Docker 沙箱隔离；任务表异步调度（暂不上 Temporal）</li>
+            </ul>
+        </section>
+        <section class="phase-card p2">
+            <h2><span class="badge">二期</span> 可靠编排与隔离强化</h2>
+            <ul>
+                <li>引入 Temporal（长任务、暂停恢复、人工审批）</li>
+                <li>按需引入 NATS JetStream（事件解耦）</li>
+                <li>每租户 / 每 Run 强化 Hermes 进程与目录隔离</li>
+                <li>完善评测、成本看板、告警</li>
+                <li>可选企业 SSO（Keycloak / 企业 IdP）前置</li>
+            </ul>
+        </section>
+        <section class="phase-card p3">
+            <h2><span class="badge">三期</span> 多 Runtime 与自动化</h2>
+            <ul>
+                <li>接入 OpenCode、QwenPaw、Eino 等更多 Runtime</li>
+                <li>A2A Gateway（跨 Agent 协作）</li>
+                <li>独立 Browser / Code Worker；E2B 等沙箱</li>
+                <li>Dify 仅作 Legacy 兼容运行时</li>
+                <li>UE / GPU 等专项 Worker（按业务需要）</li>
+            </ul>
+        </section>
     </div>
 
     <div class="flow">
-      请求主路径：统一门户 → GFast 身份与鉴权 → Core 立项/记录 →（一期任务表 / 二期 Temporal）→ Runtime Adapter → 沙箱 Runtime → 工具经 MCP 治理门 → 业务/外部资源 → Run 记录回写
+        请求主路径：统一门户 → GFast 身份与鉴权 → Core 立项/记录 → Runtime Adapter → 沙箱 Runtime 自己连接外部 MCP → Run 记录回写
     </div>
 
     <div class="layers">
 
-      <section class="layer l1" id="layer-1">
-        <h3>① 客户端与展示层</h3>
-        <p class="meta"><span class="tag gfast">GFast</span> <span class="tag p1">一期</span></p>
-        <div class="boxes">
-          <div class="box gfast p1">GFast 管理后台</div>
-          <div class="box gfast p1 highlight">对话壳 + Runtime iframe<small>不自研聊天气泡</small></div>
-          <div class="box gfast">业务 H5 / 小程序<small>保持独立，不改造</small></div>
-          <div class="box p3">各 Runtime 自带 UI<small>仅内部调试，不作为门户</small></div>
-        </div>
-        <p class="note">统一体验落在 GFast；通过工作台切换 Hermes 等 Runtime，避免多套产品后台并列。</p>
-      </section>
+        <section class="layer l1" id="layer-1">
+            <h3>① 客户端与展示层</h3>
+            <p class="meta"><span class="tag gfast">GFast</span> <span class="tag p1">一期</span></p>
+            <div class="boxes">
+                <div class="box gfast p1">GFast 管理后台</div>
+                <div class="box gfast p1 highlight">Agent 工作台<small>Runtime 切换 · Run · 审批</small></div>
+                <div class="box gfast">业务 H5 / 小程序<small>保持独立，不改造</small></div>
+                <div class="box p3">各 Runtime 自带 UI<small>仅内部调试，不作为门户</small></div>
+            </div>
+            <p class="note">统一体验落在 GFast；通过工作台切换 Hermes 等 Runtime，避免多套产品后台并列。</p>
+        </section>
 
-      <section class="layer l2" id="layer-2">
-        <h3>② 接入、安全与统一身份</h3>
-        <p class="meta"><span class="tag gfast">GFast IAM</span> <span class="tag p1">一期</span> · <span class="tag p2">二期可选企业 IdP</span></p>
-        <div class="boxes">
-          <div class="box ext p1">Nginx / Caddy<small>HTTPS · 反代</small></div>
-          <div class="box gfast p1">登录 · RBAC · 多公司(一级部门)</div>
-          <div class="box gfast p1">短期委派 Token<small>禁止透传主 JWT</small></div>
-          <div class="box p2">Keycloak / 企业 IdP<small>SSO 前置</small></div>
-        </div>
-      </section>
+        <section class="layer l2" id="layer-2">
+            <h3>② 接入、安全与统一身份</h3>
+            <p class="meta"><span class="tag gfast">GFast IAM</span> <span class="tag p1">一期</span> · <span class="tag p2">二期可选企业 IdP</span></p>
+            <div class="boxes">
+                <div class="box ext p1">Nginx / Caddy<small>HTTPS · 反代</small></div>
+                <div class="box gfast p1">登录 · RBAC · 多租户</div>
+                <div class="box gfast p1">短期委派 Token<small>禁止透传主 JWT</small></div>
+                <div class="box p2">Keycloak / 企业 IdP<small>SSO 前置</small></div>
+            </div>
+        </section>
 
-      <section class="layer l3" id="layer-3">
-        <h3>③ 平台主权 Core（事实来源 SoT）</h3>
-        <p class="meta"><span class="tag gfast">GFast AI 模块包</span> <span class="tag p1">一期以模块交付，不拆微服务</span></p>
-        <div class="boxes">
-          <div class="box gfast">业务模块<small>原 GFast</small></div>
-          <div class="box gfast p1">资源 / 资产广场</div>
-          <div class="box gfast p1">模型路由与配额</div>
-          <div class="box gfast p1">Run 中心 · 审计</div>
-          <div class="box gfast p1">Agent / Runtime 注册</div>
-          <div class="box gfast p1">GFast MCP Provider<small>业务能力封装为 Tool</small></div>
-        </div>
-        <div class="explain">控制面先作为 GFast 清晰分包的模块落地；发布节奏冲突或团队扩大后再评估独立仓。</div>
-      </section>
+        <section class="layer l3" id="layer-3">
+            <h3>③ 平台主权 Core（事实来源 SoT）</h3>
+            <p class="meta"><span class="tag gfast">GFast AI 模块包</span> <span class="tag p1">一期以模块交付，不拆微服务</span></p>
+            <div class="boxes">
+                <div class="box gfast">业务模块<small>原 GFast</small></div>
+                <div class="box gfast p1">资源 / 资产广场</div>
+                <div class="box gfast p1">模型路由与配额</div>
+                <div class="box gfast p1">Run 中心 · 审计</div>
+                <div class="box gfast p1">Agent / Runtime 注册</div>
+                <div class="box gfast p1">GFast MCP Provider<small>业务能力封装为 Tool</small></div>
+            </div>
+            <div class="explain">控制面先作为 GFast 清晰分包的模块落地；发布节奏冲突或团队扩大后再评估独立仓。</div>
+        </section>
 
-      <section class="layer l3p" id="layer-3p">
-        <h3>③′ 投影同步 Projection（单向：平台 → Runtime）</h3>
-        <p class="meta"><span class="tag gfast">单一子模块</span> <span class="tag p1">一期先覆盖 Hermes</span> · <span class="tag p3">三期扩展到其它 Runtime</span></p>
-        <div class="boxes">
-          <div class="box gfast p1">Projection 服务<small>身份 SA · 权限 · 模型 · MCP · Skills</small></div>
-          <div class="box p1">→ Hermes Profile / 配置</div>
-          <div class="box p3">→ OpenCode / QwenPaw / …</div>
-        </div>
-        <div class="explain">配置可投影；用户不全量同步为影子账号。变更路径：diff → 灰度 → 回滚 → 审计。</div>
-      </section>
+        <section class="layer l3p" id="layer-3p">
+            <h3>③′ 投影同步 Projection（单向：平台 → Runtime）</h3>
+            <p class="meta"><span class="tag gfast">单一子模块</span> <span class="tag p1">一期先覆盖 Hermes</span> · <span class="tag p3">三期扩展到其它 Runtime</span></p>
+            <div class="boxes">
+                <div class="box gfast p1">Projection 服务<small>身份 SA · 权限 · 模型 · MCP · Skills</small></div>
+                <div class="box p1">→ Hermes Profile / 配置</div>
+                <div class="box p3">→ OpenCode / QwenPaw / …</div>
+            </div>
+            <div class="explain">配置可投影；用户不全量同步为影子账号。变更路径：diff → 灰度 → 回滚 → 审计。</div>
+        </section>
 
-      <section class="layer l4" id="layer-4">
-        <h3>④ 编排调度</h3>
-        <p class="meta"><span class="tag p1">一期：GFast 任务表</span> · <span class="tag p2">二期：Temporal / NATS 现成产品</span></p>
-        <div class="boxes">
-          <div class="box gfast p1 highlight">任务表 + 异步调用 Runtime</div>
-          <div class="box ext p2">Temporal<small>长任务 ·  恢复</small></div>
-          <div class="box ext p2">NATS JetStream<small>事件总线</small></div>
-        </div>
-        <div class="explain">Temporal / NATS 是外部基础设施，不是 GFast 内自研调度器。一期用任务表跑通主路径，出现长等待与强恢复需求再引入。</div>
-      </section>
+        <section class="layer l4" id="layer-4">
+            <h3>④ 编排调度</h3>
+            <p class="meta"><span class="tag p1">一期：GFast 任务表</span> · <span class="tag p2">二期：Temporal / NATS 现成产品</span></p>
+            <div class="boxes">
+                <div class="box gfast p1 highlight">任务表 + 异步调用 Runtime</div>
+                <div class="box ext p2">Temporal<small>长任务 · 审批 · 恢复</small></div>
+                <div class="box ext p2">NATS JetStream<small>事件总线</small></div>
+            </div>
+            <div class="explain">Temporal / NATS 是外部基础设施，不是 GFast 内自研调度器。一期用任务表跑通主路径，出现长等待与强恢复需求再引入。</div>
+        </section>
 
-      <section class="layer l5" id="layer-5">
-        <h3>⑤ Agent Runtime（可插拔 · 现成 Harness）</h3>
-        <p class="meta"><span class="tag ext">独立进程 / 容器</span> <span class="tag p1">一期 Hermes</span> · <span class="tag p3">三期扩展</span></p>
-        <div class="boxes">
-          <div class="box p1 highlight">Hermes-agent<small>终端 / 文件 / 浏览器 Harness</small></div>
-          <div class="box p3">OpenCode<small>Coding Harness</small></div>
-          <div class="box p3">QwenPaw<small>助理 OS</small></div>
-          <div class="box p3">Eino<small>目标原生 Runtime</small></div>
-          <div class="box p3">Dify Legacy<small>仅兼容存量</small></div>
-        </div>
-        <div class="explain">不魔改第三方源码进 GFast。通过 Adapter 调用；正式多公司(一级部门)前必须做到租户 / Run 级隔离（二期强化）。</div>
-      </section>
+        <section class="layer l5" id="layer-5">
+            <h3>⑤ Agent Runtime（可插拔 · 现成 Harness）</h3>
+            <p class="meta"><span class="tag ext">独立进程 / 容器</span> <span class="tag p1">一期 Hermes</span> · <span class="tag p3">三期扩展</span></p>
+            <div class="boxes">
+                <div class="box p1 highlight">Hermes-agent<small>终端 / 文件 / 浏览器 Harness</small></div>
+                <div class="box p3">OpenCode<small>Coding Harness</small></div>
+                <div class="box p3">QwenPaw<small>助理 OS</small></div>
+                <div class="box p3">Eino<small>目标原生 Runtime</small></div>
+                <div class="box p3">Dify Legacy<small>仅兼容存量</small></div>
+            </div>
+            <div class="explain">不魔改第三方源码进 GFast。通过 Adapter 调用；正式多租户前必须做到租户 / Run 级隔离（二期强化）。</div>
+        </section>
 
-      <section class="layer l6" id="layer-6">
-        <h3>⑥ 网关层 Gateway = 工具治理</h3>
-        <p class="meta"><span class="tag gfast">GFast 中间件 / 模块</span> <span class="tag p1">一期 MCP 治理门</span> · <span class="tag p3">三期 A2A</span></p>
-        <div class="boxes">
-          <div class="box gfast p1 highlight">MCP 治理门<small>权限 · Schema · 风险 · 配额 ·  审计</small></div>
-          <div class="box p3">A2A Gateway<small>发现 · 委派 · 熔断</small></div>
-        </div>
-        <div class="explain">Runtime 调用业务 Tool / 外部 MCP 必须经此门，禁止直连业务库。一期与权限数据同仓实现，降低联调成本。</div>
-      </section>
+        <section class="layer l6" id="layer-6">
+            <h3>⑥ 网关层 Gateway = 工具治理</h3>
+            <p class="meta"><span class="tag gfast">本期不做调用拦截</span> · <span class="tag p3">三期 A2A</span></p>
+            <div class="boxes">
+                <div class="box gfast">MCP 登记与映射<small>增删改查 · 按 Runtime 下发</small></div>
+                <div class="box p3">A2A Gateway<small>发现 · 委派 · 熔断</small></div>
+            </div>
+            <div class="explain">GFast 不站在 Hermes 和外部 MCP 之间。各 Runtime 用自己的方式调用 MCP。Hermes 读投影进去的 mcp_servers，自己直连。</div>
+        </section>
 
-      <section class="layer l7" id="layer-7">
-        <h3>⑦ Adapter 适配层 = 协议翻译</h3>
-        <p class="meta"><span class="tag gfast">胶水模块</span> <span class="tag p1">Hermes Adapter</span> · <span class="tag p3">其它 Runtime Adapter</span></p>
-        <div class="boxes">
-          <div class="box gfast p1 highlight">Hermes Adapter<small>start / stream / cancel / 事件归一</small></div>
-          <div class="box p3">OpenCode / QwenPaw / … Adapter</div>
-          <div class="box gfast p1">WeKnora / Model 客户端<small>薄封装</small></div>
-        </div>
-        <div class="explain">Adapter ≠ 资源广场，也 ≠ Projection。广场登记资产；Projection 下发配置；Adapter 负责一次 Run 的通话与事件回写。</div>
-      </section>
+        <section class="layer l7" id="layer-7">
+            <h3>⑦ Adapter 适配层 = 协议翻译</h3>
+            <p class="meta"><span class="tag gfast">胶水模块</span> <span class="tag p1">Hermes Adapter</span> · <span class="tag p3">其它 Runtime Adapter</span></p>
+            <div class="boxes">
+                <div class="box gfast p1 highlight">Hermes Adapter<small>start / stream / cancel / 事件归一</small></div>
+                <div class="box p3">OpenCode / QwenPaw / … Adapter</div>
+                <div class="box gfast p1">WeKnora / Model 客户端<small>薄封装</small></div>
+            </div>
+            <div class="explain">Adapter ≠ 资源广场，也 ≠ Projection。广场登记资产；Projection 下发配置；Adapter 负责一次 Run 的通话与事件回写。</div>
+        </section>
 
-      <section class="layer l8" id="layer-8">
-        <h3>⑧ 执行与沙箱</h3>
-        <p class="meta"><span class="tag p1">一期 = Hermes 容器</span> · <span class="tag p2">隔离强化</span> · <span class="tag p3">独立 Worker</span></p>
-        <div class="boxes">
-          <div class="box p1 highlight">Hermes 执行器<small>终端 · 文件 · 浏览器</small></div>
-          <div class="box ext p1">Docker 沙箱</div>
-          <div class="box p2">每租户 / 每 Run 隔离强化</div>
-          <div class="box p3">独立 Browser / Code Worker</div>
-          <div class="box p3">E2B / CubeSandbox</div>
-        </div>
-        <div class="explain">危险动作不在 GFast 主进程执行。一期执行能力由 Hermes 承担，无需并行自研 Worker 体系。</div>
-      </section>
+        <section class="layer l8" id="layer-8">
+            <h3>⑧ 执行与沙箱</h3>
+            <p class="meta"><span class="tag p1">一期 = Hermes 容器</span> · <span class="tag p2">隔离强化</span> · <span class="tag p3">独立 Worker</span></p>
+            <div class="boxes">
+                <div class="box p1 highlight">Hermes 执行器<small>终端 · 文件 · 浏览器</small></div>
+                <div class="box ext p1">Docker 沙箱</div>
+                <div class="box p2">每租户 / 每 Run 隔离强化</div>
+                <div class="box p3">独立 Browser / Code Worker</div>
+                <div class="box p3">E2B / CubeSandbox</div>
+            </div>
+            <div class="explain">危险动作不在 GFast 主进程执行。一期执行能力由 Hermes 承担，无需并行自研 Worker 体系。</div>
+        </section>
 
-      <section class="layer l9" id="layer-9">
-        <h3>⑨ 可插拔资源 Providers</h3>
-        <p class="meta"><span class="tag gfast">元数据在 GFast</span> · <span class="tag ext">能力在外部</span> · <span class="tag p1">一期</span></p>
-        <div class="boxes">
-          <div class="box gfast p1">资源广场注册表<small>MCP · Skills · 插件 · 模型</small></div>
-          <div class="box ext p1">外部 MCP Server</div>
-          <div class="box ext p1">WeKnora 知识库</div>
-          <div class="box ext p1">模型 API</div>
-          <div class="box gfast p1">业务 Tool<small>GFast MCP Provider</small></div>
-        </div>
-      </section>
+        <section class="layer l9" id="layer-9">
+            <h3>⑨ 可插拔资源 Providers</h3>
+            <p class="meta"><span class="tag gfast">元数据在 GFast</span> · <span class="tag ext">能力在外部</span> · <span class="tag p1">一期</span></p>
+            <div class="boxes">
+                <div class="box gfast p1">资源广场注册表<small>MCP 已落地 · 技能/插件占位</small></div>
+                <div class="box ext p1">外部 MCP Server</div>
+                <div class="box ext p1">WeKnora 知识库</div>
+                <div class="box ext p1">模型 API</div>
+                <div class="box gfast p1">业务 Tool<small>GFast MCP Provider</small></div>
+            </div>
+        </section>
     </div>
 
     <section class="matrix">
-      <h3>分层落点总表</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>层级</th>
-            <th>职责（一句话）</th>
-            <th>落点</th>
-            <th>期次</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th>① 展示</th>
-            <td>统一门户与 对话壳(iframe)</td>
-            <td><span class="tag gfast">GFast 前端</span></td>
-            <td><span class="tag p1">一期</span></td>
-          </tr>
-          <tr>
-            <th>② 身份</th>
-            <td>登录、RBAC、多公司(一级部门)、换票</td>
-            <td><span class="tag gfast">GFast IAM</span> + <span class="tag ext">反代</span></td>
-            <td><span class="tag p1">一期</span> <span class="tag p2">二期 SSO</span></td>
-          </tr>
-          <tr>
-            <th>③ Core</th>
-            <td>资产、模型、Run、审计、业务 Tool</td>
-            <td><span class="tag gfast">GFast 模块包</span></td>
-            <td><span class="tag p1">一期</span></td>
-          </tr>
-          <tr>
-            <th>③′ 投影</th>
-            <td>配置单向投影到 Runtime</td>
-            <td><span class="tag gfast">单一 Projection 模块</span></td>
-            <td><span class="tag p1">一期 Hermes</span> <span class="tag p3">三期扩展</span></td>
-          </tr>
-          <tr>
-            <th>④ 编排</th>
-            <td>任务发起与可靠长流程</td>
-            <td><span class="tag gfast">任务表</span> → <span class="tag ext">Temporal / NATS</span></td>
-            <td><span class="tag p1">一期</span> → <span class="tag p2">二期</span></td>
-          </tr>
-          <tr>
-            <th>⑤ Runtime</th>
-            <td>Agent 思考与工具循环</td>
-            <td><span class="tag ext">Hermes 等外部进程</span></td>
-            <td><span class="tag p1">一期 Hermes</span> <span class="tag p3">三期多 Runtime</span></td>
-          </tr>
-          <tr>
-            <th>⑥ Gateway</th>
-            <td>工具调用安检与治理</td>
-            <td><span class="tag gfast">MCP 治理门</span></td>
-            <td><span class="tag p1">一期</span> <span class="tag p3">三期 A2A</span></td>
-          </tr>
-          <tr>
-            <th>⑦ Adapter</th>
-            <td>运行时协议翻译与事件归一</td>
-            <td><span class="tag gfast">Adapter 胶水</span></td>
-            <td><span class="tag p1">一期 Hermes</span> <span class="tag p3">三期扩展</span></td>
-          </tr>
-          <tr>
-            <th>⑧ 沙箱</th>
-            <td>危险动作隔离执行</td>
-            <td><span class="tag ext">Docker / Hermes 容器</span></td>
-            <td><span class="tag p1">一期</span> <span class="tag p2">二期强化</span> <span class="tag p3">三期 Worker</span></td>
-          </tr>
-          <tr>
-            <th>⑨ Providers</th>
-            <td>资源注册 + 外部能力提供</td>
-            <td><span class="tag gfast">广场</span> + <span class="tag ext">外部服务</span></td>
-            <td><span class="tag p1">一期</span></td>
-          </tr>
-        </tbody>
-      </table>
+        <h3>分层落点总表</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>层级</th>
+                <th>职责（一句话）</th>
+                <th>落点</th>
+                <th>期次</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th>① 展示</th>
+                <td>统一门户与 Agent 工作台</td>
+                <td><span class="tag gfast">GFast 前端</span></td>
+                <td><span class="tag p1">一期</span></td>
+            </tr>
+            <tr>
+                <th>② 身份</th>
+                <td>登录、RBAC、多租户、换票</td>
+                <td><span class="tag gfast">GFast IAM</span> + <span class="tag ext">反代</span></td>
+                <td><span class="tag p1">一期</span> <span class="tag p2">二期 SSO</span></td>
+            </tr>
+            <tr>
+                <th>③ Core</th>
+                <td>资产、模型、Run、审计、业务 Tool</td>
+                <td><span class="tag gfast">GFast 模块包</span></td>
+                <td><span class="tag p1">一期</span></td>
+            </tr>
+            <tr>
+                <th>③′ 投影</th>
+                <td>配置单向投影到 Runtime</td>
+                <td><span class="tag gfast">单一 Projection 模块</span></td>
+                <td><span class="tag p1">一期 Hermes</span> <span class="tag p3">三期扩展</span></td>
+            </tr>
+            <tr>
+                <th>④ 编排</th>
+                <td>任务发起与可靠长流程</td>
+                <td><span class="tag gfast">任务表</span> → <span class="tag ext">Temporal / NATS</span></td>
+                <td><span class="tag p1">一期</span> → <span class="tag p2">二期</span></td>
+            </tr>
+            <tr>
+                <th>⑤ Runtime</th>
+                <td>Agent 思考与工具循环</td>
+                <td><span class="tag ext">Hermes 等外部进程</span></td>
+                <td><span class="tag p1">一期 Hermes</span> <span class="tag p3">三期多 Runtime</span></td>
+            </tr>
+            <tr>
+                <th>⑥ Gateway</th>
+                <td>工具调用拦截</td>
+                <td><span class="tag gfast">不做。只登记和映射</span></td>
+                <td><span class="tag p3">三期 A2A</span></td>
+            </tr>
+            <tr>
+                <th>⑦ Adapter</th>
+                <td>运行时协议翻译与事件归一</td>
+                <td><span class="tag gfast">Adapter 胶水</span></td>
+                <td><span class="tag p1">一期 Hermes</span> <span class="tag p3">三期扩展</span></td>
+            </tr>
+            <tr>
+                <th>⑧ 沙箱</th>
+                <td>危险动作隔离执行</td>
+                <td><span class="tag ext">Docker / Hermes 容器</span></td>
+                <td><span class="tag p1">一期</span> <span class="tag p2">二期强化</span> <span class="tag p3">三期 Worker</span></td>
+            </tr>
+            <tr>
+                <th>⑨ Providers</th>
+                <td>资源注册 + 外部能力提供</td>
+                <td><span class="tag gfast">广场</span> + <span class="tag ext">外部服务</span></td>
+                <td><span class="tag p1">一期</span></td>
+            </tr>
+            </tbody>
+        </table>
     </section>
 
     <div class="bottom">
-      <section class="panel concepts">
-        <h3>关键边界（避免混淆）</h3>
-        <ul>
-          <li><strong>资源广场</strong>：登记「有哪些」资产（MCP / Skills / 模型 / 插件）</li>
-          <li><strong>Projection</strong>：把「本次可用配置」单向下发给 Runtime</li>
-          <li><strong>Adapter</strong>：一次 Run 中如何呼叫 Runtime 并回收事件</li>
-          <li><strong>Gateway</strong>：Runtime 使用 Tool 时的权限 / 风险 / 配额安检</li>
-          <li><strong>Worker / 沙箱</strong>：终端、文件、浏览器等副作用的实际执行边界</li>
-        </ul>
-      </section>
-      <section class="panel forbid">
-        <h3>架构约束（禁止项）</h3>
-        <ul>
-          <li>为每个概念拆独立微服务（早期交付与维护成本过高）</li>
-          <li>将第三方 Runtime 源码深度揉进 GFast 并魔改</li>
-          <li>以 Hermes / 其它框架 Dashboard 作为多公司(一级部门)统一门户</li>
-          <li>多公司(一级部门)共用同一 Runtime HOME / 会话库</li>
-          <li>Runtime 直连平台主库；透传用户主 JWT</li>
-          <li>绕过 MCP 治理门调用高危 Tool</li>
-          <li>一期同时铺开 Temporal + A2A + 多 Worker + 多 Runtime</li>
-        </ul>
-      </section>
+        <section class="panel concepts">
+            <h3>关键边界（避免混淆）</h3>
+            <ul>
+                <li><strong>资源广场</strong>：登记 MCP；技能和插件占位。我的按部门数据权限，广场按一级部门，订阅后 Agent 才能选用</li>
+                <li><strong>Projection</strong>：把「本次可用配置」单向下发给 Runtime</li>
+                <li><strong>Adapter</strong>：一次 Run 中如何呼叫 Runtime 并回收事件</li>
+                <li><strong>Gateway</strong>：Runtime 使用 Tool 时的权限 / 风险 / 配额安检</li>
+                <li><strong>Worker / 沙箱</strong>：终端、文件、浏览器等副作用的实际执行边界</li>
+            </ul>
+        </section>
+        <section class="panel forbid">
+            <h3>架构约束（禁止项）</h3>
+            <ul>
+                <li>为每个概念拆独立微服务（早期交付与维护成本过高）</li>
+                <li>将第三方 Runtime 源码深度揉进 GFast 并魔改</li>
+                <li>以 Hermes / 其它框架 Dashboard 作为多租户统一门户</li>
+                <li>多租户共用同一 Runtime HOME / 会话库</li>
+                <li>Runtime 直连平台主库；透传用户主 JWT</li>
+                <li>在 GFast 里拦截 Hermes 的 MCP 调用，代替 Hermes 自己的客户端</li>
+                <li>一期同时铺开 Temporal + A2A + 多 Worker + 多 Runtime</li>
+            </ul>
+        </section>
     </div>
 
     <footer>配套智能体文档：ARCHITECTURE.agents.md · 架构图与 MD 需同步更新 · 一期 Hermes 闭环 · 二期编排与隔离 · 三期多 Runtime</footer>
-  </div>
+</div>
 </body>
 </html>
