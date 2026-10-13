@@ -94,12 +94,15 @@ workspace/ HERMES-AGENT-JZIN-BK
 
 - **公司边界**是一级部门（`parent_id = 0`），不新建租户表。投影目录、编码唯一、跨资源绑定按该公司的部门子树。身份上下文里的 `tenant_id` 映射为这个一级部门 id。
 - **数据权限**用 GFast `GetAuthDeptWhere`（部门数据权限，不随创建人调岗迁移）。新建行的 `dept_id` 是登录人当时的部门，`created_by` 是创建人。我的列表、详情、修改、删除，以及发布、下架、新版本、测连通，都带这个条件。超管不限制；角色没配数据范围时兜底为仅本人。数据范围选「全部」的角色可以看到各公司数据。广场只展示本公司一级部门子树里已发布的记录，不套个人数据范围。
-- **Agent 对话**是 GFast 自己的对话页：选择已启用的 Agent，先把已发布资产投影到独立目录（保留 Hermes 的 `state.db` 和附件），再由适配器拉起该目录上的本机 `hermes serve`，用 tui_gateway JSON-RPC 续聊。流式正文、思考和工具事件经 GFast 已有 WebSocket 推到页面。生成文件的预览和下载也走 GFast：只读该 Agent 投影目录里的允许类型，仍受部门数据权限约束，浏览器不读本机磁盘。平台记录会话和 Run，不把用户主 JWT 交给 Hermes，浏览器也不直连 serve。Runtime 注册里的 `embed_url` 仍保留，本步不使用。
-- **资源广场**目录下是 MCP、技能、插件三个菜单。MCP 有「我的」和「广场」。连接方式、地址和请求头是各 Runtime 共用的；工具过滤、超时、证书、OAuth、Stdio 参数和环境变量标成 Hermes 独有，只在投影到 Hermes 时写入 `mcp_servers`。技能和插件只占位。REST 可登记，不写入 Hermes。
-- **Projection**把已绑定的已发布资产写成独立目录，不使用个人 Hermes 家目录。
+- **Agent 对话**是 GFast 自己的对话页：选择已启用的 Agent，先把已发布资产写成配置模板，再铺进该用户这个 Agent 的运行目录（留下 Hermes 的 `state.db`、记忆和附件），由适配器拉起该运行目录上的本机 `hermes serve`，用 tui_gateway JSON-RPC 续聊。发送前把上传的文件和文件夹复制到运行目录的 `attachments/chat-<会话>/`，供 Docker 只读挂载到 `/root/.hermes/attachments`；图片仍走 `images`。流式正文、思考、工具事件，以及 `clarify` 追问，经 GFast 已有 WebSocket 推到页面。追问由门户回答后写回同一轮，适配器不把 `clarify` 答成空字符串。生成文件的预览和下载也走 GFast：只读该用户运行目录里的允许类型，浏览器不读本机磁盘。平台记录会话和 Run，会话只对创建人可见。不把用户主 JWT 交给 Hermes，浏览器也不直连 serve。Runtime 注册里的 `embed_url` 仍保留，本步不使用。
+- **资源广场**目录下是 MCP、技能、插件三个菜单。MCP 和技能都有「我的」和「广场」。连接方式、地址和请求头是各 Runtime 共用的；工具过滤、超时、证书、OAuth、Stdio 参数和环境变量标成 Hermes 独有，只在投影到 Hermes 时写入 `mcp_servers`。技能用 zip 登记，包内只能有一个 `SKILL.md`，投影时整包拷进该 Agent 的 `skills/{编码}/`。GFast 不运行技能，也不配置 docker 或 local。插件只占位。REST 可登记，不写入 Hermes。
+- **Projection**把已绑定的已发布资产写成独立目录，不使用个人 Hermes 家目录。配置模板在 `{homeRoot}/{公司一级部门}/{agentCode}/`，只放 `config.yaml`、`.env`、技能和插件，忽略个人的启用开关。真正的 Hermes 家目录是 `{homeRoot}/{公司一级部门}/users/{userId}/agents/{agentCode}/`：每次对话前从模板铺配置，并套上该用户关掉的资产，留下 `memories/`、`state.db`、工作区和附件。旧的共享目录不自动拆进某个用户。
+- **记忆**在平台上一个用户一行主体（`ai_memory_subject`），正文不入库。`USER.md` 只在该 Agent 运行目录里还不存在时，用姓名、账号、部门种一次。`MEMORY.md` 由 Hermes 自己写。门户「我的记忆」只读写当前用户这两份文件，下一场新会话才会注入。会话列表只看本人。
 - **Runtime 注册**保存 API Base URL、health、embed_url 与启用状态。
+- **模型目录**可登记对话、Embedding、ReRank、视觉和语音。接入项是服务商、模型名称、显示名称、Base URL、API Key 和自定义请求头；高级项按类型保存上下文窗口、思考参数格式、向量维度和并发上限。服务商含 25 家固定厂商和自定义 OpenAI 兼容接口；选中厂商后按当前模型类型填入默认 Base URL，并预选思考参数格式。占位地址不能直接保存。对话和视觉未填上下文窗口时保存为 200000。部署配置 `ai.builtinModels` 在进程启动时同步为内置模型：`builtin=1`、`dept_id=0`，不走部门数据权限，能打开模型列表的登录用户都能看到和使用。门户不能修改或删除；配置里去掉并重启后，对应行软删除。复制会另存为本公司模型，且不带原密钥。新建和编辑时可测试连接：按类型向 OpenAI 兼容接口发一次最小请求，不写库；Embedding 测通后回填向量维度。已启用的对话模型会投影成该 Agent 目录里的 Hermes 具名提供商，密钥只写入该目录的 `.env`。对话页可以在输入框右侧选择这些模型，并选择推理强度，默认是中档。选择记在会话上，不改投影里的默认模型。只接受 low、high、max 的接口会把中档写成 high。Embedding、ReRank、视觉和语音仍只留在目录里。不再复制本机 Hermes 的模型路由和个人密钥。
 - **Run 中心**只做列表/详情骨架。主路径无人工审批；`risk_level` 仅预留展示。
-- 任务表调度、按公司上 Docker 仍未做。Hermes 与外部 MCP 之间不设治理门。对话这一步的 Adapter 只负责本机 `hermes serve` 的 start / stream / cancel。
+- 部署分两种。`ai.runtime.placement=local`（本机开发）仍由 GFast 进程内拉起 `hermes serve`。`placement=remote`（Kubernetes）时，GFast 是无状态 Deployment，可以多副本；Hermes 跑在 StatefulSet `hermes-runtime` 上，多个用户按槽位固定在同一个 Pod，每个运行目录只有一个写者。Pod 崩溃后用同一序号挂上原来的盘再起，已写入 `state.db` 的会话可以继续，进行中的那一轮要重发。200 人同时在线大约 8～10 个 Runtime Pod。技能包目录用只读共享卷，Hermes 家目录不放在共享卷上。
+- 任务表调度、按公司上 Docker 沙箱、Temporal 仍未做。Hermes 与外部 MCP 之间不设治理门。对话这一步的 Adapter 负责 `hermes serve` 的 start / stream / cancel，并把 `clarify` 交回门户回答。
 
 ### 二期 — 编排与隔离强化
 
@@ -138,9 +141,11 @@ workspace/ HERMES-AGENT-JZIN-BK
 
 ```text
 jzin-bk/internal/app/
-├── ai_asset/          # MCP 登记、订阅和按 Runtime 映射；技能和插件占位
+├── ai_asset/          # MCP 与技能登记、订阅；技能包投影。插件占位
+├── ai_model/          # 模型目录。对话模型投影到 Hermes；其他类型仍只在目录
 ├── ai_runtime/        # Runtime 注册、切换、工作台 API
-├── ai_projection/     # 单向投影（先 Hermes）
+├── ai_projection/     # 单向投影（先 Hermes）。模板按 Agent，运行目录按用户
+├── ai_memory/         # 用户记忆主体。正文在 Hermes 运行目录
 ├── ai_adapter_hermes/ # Hermes Adapter
 ├── ai_run/            # Run、事件、产物元数据、审计
 └── ai_job/            # 一期任务表调度
@@ -161,7 +166,7 @@ jzin-bk/internal/app/
 
 | 概念 | 是什么 | 不是什么 |
 |---|---|---|
-| **资源广场** | 登记 MCP（已落地）、技能和插件（占位） | 运行时调用 Hermes 的地方 |
+| **资源广场** | 登记 MCP 和技能（已落地）、插件（占位）。技能只投影目录 | 运行时调用 Hermes 的地方 |
 | **Projection** | 事先把配置推给 Runtime | 双向主数据同步 |
 | **Adapter** | Run 时呼叫 Runtime（start/stream/cancel） | 资源广场，也不是 Projection |
 | **Gateway** | 本期不做。GFast 不拦截 Runtime 的 MCP 调用 | 各 Runtime 自己的 MCP 客户端 |
@@ -182,7 +187,21 @@ jzin-bk/internal/app/
     → 事件/产物回写 Run 中心
 ```
 
-当前对话还没走到任务表和 Docker。已落地的链路是：门户登录 → 部门数据权限 → 投影目录 → 适配器拉起该目录的本机 `hermes serve` → tui_gateway JSON-RPC → 事件回到 Run 和会话。生成文件经 GFast 从投影目录预览和下载。浏览器只连 GFast。同一 Agent 仍共用这一份投影目录；门户会话按创建时的部门做数据范围。按人拆目录留到后面的进程隔离。
+当前对话还没走到任务表和 Docker 沙箱。已落地的链路是：门户登录 → 部门数据权限 → 配置模板 → 铺进该用户这个 Agent 的运行目录 → 适配器拉起该目录的 `hermes serve` → tui_gateway JSON-RPC → 事件回到 Run 和会话。本机模式下 serve 在 GFast 进程内；Kubernetes 模式下 GFast 把这一轮交给槽位对应的 Runtime Pod，流式事件经 Redis 频道 `ai:chat` 回到持有该用户 WebSocket 的 GFast Pod。上传的文件和文件夹在发送前复制到运行目录的 `attachments/`，供沙箱只读读取。`clarify` 由门户写回同一轮。生成文件的预览和下载走 GFast：local 读本机运行目录，remote 向持有该盘的 Pod 取回字节。浏览器只连 GFast。配置模板按 Agent 共用；`HERMES_HOME`、`state.db` 和记忆按（公司，用户，Agent）分开。门户会话只列出创建人本人的记录。
+
+### 5.2 Kubernetes 部署形状
+
+```text
+浏览器 → GFast Service（Deployment，无状态，副本可增减）
+    → MySQL：账号、资产、会话、Run、ai_runtime_slot
+    → 按槽位把 turn / answer / interrupt / 文件 / 记忆交给
+       hermes-runtime-{序号}.hermes-runtime
+    → 该 Pod 上的 hermes serve（一块 RWO 盘，多个运行目录）
+    → 流式事件发布到 Redis ai:chat
+    → 任意 GFast Pod 推给连在本进程上的浏览器
+```
+
+槽位表一行对应一个（公司，用户，Agent）运行目录。第一次按 `userId % replicas` 定序号，之后以表里的序号为准，扩容不搬已有目录。只有序号相同的 Pod 能续约。同一目录不会被两个 Pod 同时写。副本数由 StatefulSet 手工设置，并与配置 `ai.runtime.replicas` 保持一致。
 
 ### 5.1 禁止调用链
 
@@ -191,7 +210,7 @@ jzin-bk/internal/app/
 Hermes → 直连业务数据库
 Hermes → 持有用户主 JWT / 管理员永久 Token
 多用户 → 共用同一个 HERMES_HOME / state.db
-Runtime → 直连业务库（仍禁止）；外部 MCP 由 Runtime 自连，平台不拦截
+Runtime → 绕过 MCP 治理门调高危 Tool
 已发布资产 → 无版本热改
 ```
 
@@ -261,7 +280,7 @@ GFast MCP Tool 必须调用业务服务/API，**禁止绕过业务规则直连�
 1. Runtime 注册项（名称、版本、健康检查）
 2. Adapter：`start` / `stream`/`events` / `cancel` / 输出归一
 3. Projection 映射表（模型、MCP、Skills、身份如何下发）
-4. MCP 是否在资源广场登记，并按 Runtime 映射投影（平台不转发调用）
+4. 工具调用是否全部回灌 MCP 治理门
 5. 沙箱/隔离策略
 6. 风险等级与审批策略
 7. Run 审计字段与产物落点
@@ -291,7 +310,7 @@ GFast MCP Tool 必须调用业务服务/API，**禁止绕过业务规则直连�
 - 第三方 Runtime 源码揉进 jzin-bk 大改
 - Runtime 直连平台主库
 - 透传用户主 JWT
-- （已取消）GFast 不做 MCP 调用治理门；Runtime 自行连接外部 MCP，平台只登记与投影
+- 绕过 MCP 治理门调高危 Tool
 - 多租户共用同一 Runtime HOME
 - 已发布资产无版本热改
 - 一期同时上 Temporal + A2A + 多 Worker + 多 Runtime
@@ -308,8 +327,8 @@ GFast MCP Tool 必须调用业务服务/API，**禁止绕过业务规则直连�
 | 工作区名 | HERMES-AGENT-JZIN-BK |
 | 平台仓库 | `jzin-bk/`（= GFast） |
 | Runtime 仓库 | `hermes-agent/` |
-| 架构图（HTML） | 工作区 `all-project-doc/AI 平台总体技术架构.html` / 在线 `index.html` |
-| 智能体约束（本文件） | 工作区 `all-project-doc/ARCHITECTURE.agents.md` / 本仓同名 |
+| 架构图（HTML） | `all-project-doc/AI 平台总体技术架构.html` |
+| 智能体约束（本文件） | `all-project-doc/ARCHITECTURE.agents.md` |
 | 长期融合规范 | `all-project-doc/(旧)AI平台总体架构与服务融合规范方案.md` |
 | 当前实施焦点 | **一期：jzin-bk + Hermes-agent** |
 | 文档状态 | 与架构图同步持续更新 |
