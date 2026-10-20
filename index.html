@@ -200,7 +200,7 @@
         <section class="phase-card p1">
             <h2><span class="badge">一期</span> 可运行最小闭环</h2>
             <ul>
-                <li>GFast：登录/RBAC/多租户、MCP 和技能广场（插件占位）、Agent 工作台、Run 中心。部门数据权限用 GetAuthDeptWhere，公司边界仍是一级部门；广场按一级部门可见，订阅后才能被 Agent 选用。技能包投影进 Agent 目录，GFast 不运行技能</li>
+                <li>GFast：登录/RBAC/多租户、MCP 和技能广场（插件占位）、Agent 工作台、Run 中心。部门数据权限用 GetAuthDeptWhere，公司边界仍是一级部门；广场按一级部门可见，订阅后才能被 Agent 选用。技能包投影进 Agent 目录，GFast 不运行技能。本机 Desktop 插件 hermes-ext/gfast-bridge 可把已授权技能下载进个人 profile 的 skills/，不替代投影，门户对话不读这份个人目录</li>
                 <li>接入 Hermes-agent（Runtime）+ Hermes Adapter</li>
                 <li>已落地：Agent 对话由适配器在该用户这个 Agent 的运行目录上拉起 hermes serve（tui_gateway），门户续聊、流式、附件，以及该目录内文件的预览和下载，都不直连 Hermes。本机 placement=local 仍在 GFast 进程内拉起；Kubernetes placement=remote 时 GFast 无状态多副本，Hermes 在 StatefulSet 上按槽位固定用户，一个运行目录只有一个写者，崩溃后同盘续聊。200 人同时在线大约 8～10 个 Runtime Pod。流式事件经 Redis 回到门户</li>
                 <li>记忆：平台一个用户一行主体，正文不入库。配置模板按 Agent；HERMES_HOME、state.db 和 memories 按（公司，用户，Agent）。USER.md 只在还不存在时种一次。门户「我的记忆」只读写当前用户。会话列表只看本人</li>
@@ -437,7 +437,7 @@
         <section class="panel concepts">
             <h3>关键边界（避免混淆）</h3>
             <ul>
-                <li><strong>资源广场</strong>：登记 MCP 和技能；插件占位。我的按部门数据权限，广场按一级部门，订阅后 Agent 才能选用。技能只投影目录</li>
+                <li><strong>资源广场</strong>：登记 MCP 和技能；插件占位。我的按部门数据权限，广场按一级部门，订阅后 Agent 才能选用。门户技能只投影进 Agent 目录。本机 Desktop 插件另把已授权技能下载进个人 profile，不替代投影</li>
                 <li><strong>Projection</strong>：把「本次可用配置」单向下发给 Runtime</li>
                 <li><strong>Adapter</strong>：一次 Run 中如何呼叫 Runtime 并回收事件</li>
                 <li><strong>Gateway</strong>：Runtime 使用 Tool 时的权限 / 风险 / 配额安检</li>
