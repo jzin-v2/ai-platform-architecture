@@ -11,12 +11,12 @@
 
 ## 当前关键口径
 
-- `jzin-bk/` = GFast；`hermes-agent/` = 外部 Runtime
+- `jzin-bk/` = GFast；`hermes-agent/` = 外部 Runtime；统一门户在 `jzin-bk/frontend`（Agent：`frontend/src/views/ai/agent`；广场：`frontend/src/views/ai/plaza/`）
 - 公司边界 = 一级部门（`dept_id` / `parent_id=0`），无独立 tenant 表
 - **GFast 不站在 Hermes 与外部 MCP 之间**：只做 MCP 统一登记 + 按 Runtime 投影映射；各 Runtime 自己连接 MCP
-- 一期对话：GFast 壳 + 按（公司，用户，Agent）运行目录投影 + Adapter 拉起 `hermes serve`（tui_gateway）；`embed_url` 保留但本步不用
+- 一期对话：GFast 壳 + `ai_agent` 定义 + 按（公司，用户，Agent）运行目录投影 + Adapter 拉起 `hermes serve`（tui_gateway）；`embed_url` 保留但本步不用；短期委派 Token 只在未使用的 embed 会话接口签发
 - 部署：`ai.runtime.placement=local`（本机进程内 serve）或 `remote`（K8s：GFast 无状态多副本 + Hermes StatefulSet 按槽位粘滞，流式经 Redis `ai:chat` 回门户）
-- 资源广场：MCP、技能已落地（技能 zip / 单 SKILL.md，整包投影）；插件占位
+- 资源广场：MCP、技能已落地（技能 zip / 单 SKILL.md，整包投影）；插件占位；工具集 `toolset` 后端可登记并投影到 `tools.cli.enabled`，门户无菜单、Agent 表单不绑定
 - 本机 Desktop：`hermes-ext/gfast-bridge` 可把已授权技能下载进个人 profile，**不替代**门户投影；门户对话不读个人 `HERMES_HOME`
 - 模型目录可登记；内置模型与会话级模型/推理强度选择已写入架构
 - 无人工审批；出问题管理员事后处理
