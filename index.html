@@ -53,16 +53,17 @@
 
         .phases {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            gap: 8px;
             margin-bottom: 18px;
         }
-        @media (max-width: 900px) { .phases { grid-template-columns: 1fr; } }
         .phase-card {
+            display: grid;
+            grid-template-columns: 190px minmax(0, 1fr);
+            gap: 12px;
             background: #fff;
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 14px 14px 12px;
+            padding: 10px 14px 10px 18px;
             position: relative;
             overflow: hidden;
         }
@@ -74,15 +75,22 @@
         .phase-card.p2 { --accent: var(--p2-a); }
         .phase-card.p3 { --accent: var(--p3-a); }
         .phase-card h2 {
-            margin: 0 0 6px; font-size: .98rem;
-            display: flex; align-items: center; gap: 8px;
+            margin: 0; font-size: .98rem;
+            display: flex; align-items: baseline; gap: 8px;
         }
         .badge {
             font-size: .72rem; font-weight: 700; padding: 2px 8px;
             border-radius: 999px; color: #fff; background: var(--accent);
         }
-        .phase-card ul { margin: 0; padding-left: 1.15em; font-size: .82rem; }
-        .phase-card li { margin: 4px 0; }
+        .phase-card ul {
+            display: flex; flex-wrap: wrap; gap: 4px 18px;
+            margin: 0; padding: 0; list-style: none; font-size: .82rem;
+        }
+        .phase-card li { position: relative; max-width: 100%; padding-left: 1em; }
+        .phase-card li::before { content: "•"; position: absolute; left: 0; }
+        @media (max-width: 640px) {
+            .phase-card { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+        }
 
         .flow {
             text-align: center; font-weight: 650; color: #0b5fff;
