@@ -8,7 +8,9 @@
 > 2. 技术架构图：工作区 `jzin-bk/all-project-doc/AI 平台总体技术架构.html` ≡ 本仓 `index.html`  
 >    在线：https://jzin-v2.github.io/ai-platform-architecture/
 > 3. 功能/原型（本仓保留）：`functional.html`、`prototype/`
-> 4. 详细规范（可选）：工作区 `all-project-doc/(旧)AI平台总体架构与服务融合规范方案.md`
+> 4. 协作规范：本仓 `BRANCHING.md`（工作区同名说明）
+> 5. 智能问数调研：本仓 `nl2sql-survey.md`
+> 6. 详细规范（可选）：工作区 `all-project-doc/(旧)AI平台总体架构与服务融合规范方案.md`
 >
 > 仓库：https://github.com/jzin-v2/ai-platform-architecture  
 > 变更架构时：**工作区文档与本仓同步推送**，并保持分期（一期/二期/三期）一致。
@@ -113,6 +115,14 @@ workspace/ HERMES-AGENT-JZIN-BK
 #### 壳层嵌套（WeKnora）
 
 WeKnora 以壳层嵌套接入门户，不替代 `ai/chat/index`。GFast 是乾坤宿主，七个菜单（对话、知识库、产物、智能体、浏览器连接、自动化、共享空间）共用一个保活子应用。壳页面在 WeKnora 的 `frontend/src/gfast-embed/`，套原组件，不复制模板。MCP 和技能的主数据在 GFast。空间管理员把已发布资产下发到本公司 WeKnora 空间后，WeKnora 智能体按远端 id 或技能名选用；这些行 `managed_by=gfast`，WeKnora 页面不能改。壳里打开 WeKnora 自己的 MCP 或技能页时，跳回门户 `/ai/plaza/mcp`。浏览器只拿 WeKnora 自己的会话，不拿 GFast 主 JWT；接口走同域 `/weknora/`。账本在 WeKnora 仓库 `docs/gfast-embed/`。共享空间的创建和审批仍看 WeKnora 租户角色。换票时，拥有「WeKnora 空间管理员」权限（`api/v1/aiWeknora/workspace/admin`）的用户以 admin 加入本公司空间，其他人是 contributor。调岗后，该用户在其他 gfast 公司空间的成员身份会移除。模型、已下发的 MCP 和技能主数据只在 gfast。设置 `GFAST_LOCK_COMPANY_ASSETS=1` 后，WeKnora 拒绝本地新建 MCP 和技能。模型设置分区只读并跳回门户 `/ai/model`。
+
+#### 考试问数（一期直连 Wren）
+
+考试系统按第三方业务系统试点。口径、术语和确认 SQL 放在独立 Wren 项目 `exam-wren`，不复制进 WeKnora 知识库。业务库凭证只在 Wren：库 `exam_rpt` 有 7 张 `SQL SECURITY DEFINER` 视图，账号 `exam_ro` 可以 `SELECT` 这些视图。视图去掉密码和 open_id，手机号打码，并滤掉软删除行。`dry_run` 要跑 `EXPLAIN`，所以另外给了视图 `SHOW VIEW`，以及底表上与视图相同的列级 `SELECT`。试卷密码、学员密码、open_id 和原始手机号没有授权。建库脚本是 `all-project-doc/智能问数-考试系统报表视图.sql`，脚本里的密码是占位符。
+
+Wren 打开 `strict_mode`，只接受模型里的表，并拒绝写语句。它的 MCP 只听 `127.0.0.1:8301`，`run-all.ps1` 用 `--allow-write` 拉起，这样确认过的 SQL 可以回灌。GFast 工具箱登记编码 `exam-wren`（streamable HTTP）和技能 `ask-data`，下发到本公司 WeKnora 空间。`store_query` 需要审批，其余工具直接可用。WeKnora 的 `SSRF_WHITELIST` 要包含 `127.0.0.1`，否则保存这个地址会被拒绝。对话入口是 WeKnora 智能体「考试问数」。一期不做按人的行过滤：能用这个智能体就能问。平台侧审计表留到二期，一期看 WeKnora 会话里的工具调用。
+
+二期在需要按人/部门过滤、平台统一审计，或 Wren 不再只绑本机时再做。做法是 GFast 原样转发 Wren 的全部工具，并只在 `managed_by=gfast` 的调用上注入身份。切换时只改资产地址。
 
 ### 二期 — 编排与隔离强化
 
